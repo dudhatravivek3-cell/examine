@@ -1,0 +1,62 @@
+<!-- Page Header -->
+<section class="page-header blog-header text-center flex-center">
+  <div class="header-overlay"></div>
+  <div class="header-content container text-light slide-up">
+    <h1>Industry News & Global Insights</h1>
+    <p>Get latest updates on import-export tariffs, container logistics rates, agricultural pricing trends, and company news.</p>
+  </div>
+</section>
+
+<!-- Blog Cards stream -->
+<section class="blog-listing-container container slide-up" style="margin-top: 60px; margin-bottom: 80px;">
+  @if (blogs().length === 0) {
+    <!-- Fallback blogs if database is empty -->
+    <div class="grid grid-3">
+      <div class="card card-hover flex-column" style="padding: 0; overflow: hidden; height: 100%;">
+        <div style="height: 200px;">
+          <img src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=600&q=80" alt="Freight news" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div style="padding: 24px; flex-grow: 1;" class="flex-column">
+          <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--secondary-color); margin-bottom: 8px; display: block;">Logistics Update</span>
+          <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; color: var(--primary-color);">Ocean Freight Rate Trends for Q3 2026</h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; line-height: 1.5; flex-grow: 1;">An in-depth analysis of shipping container shortages, port congestions, and expected logistics rates across major export routes.</p>
+          <span class="btn btn-outline" style="align-self: flex-start; font-size: 0.8rem; padding: 8px 20px;">Read Article</span>
+        </div>
+      </div>
+
+      <div class="card card-hover flex-column" style="padding: 0; overflow: hidden; height: 100%;">
+        <div style="height: 200px;">
+          <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80" alt="Agriculture news" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div style="padding: 24px; flex-grow: 1;" class="flex-column">
+          <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--secondary-color); margin-bottom: 8px; display: block;">Agri Trade</span>
+          <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; color: var(--primary-color);">Indian Basmati Rice Export Standards</h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; line-height: 1.5; flex-grow: 1;">Exploring government policies, phytosanitary requirements, and maximum residue limit (MRL) directives governing global imports.</p>
+          <span class="btn btn-outline" style="align-self: flex-start; font-size: 0.8rem; padding: 8px 20px;">Read Article</span>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="grid grid-3">
+      @for (blog of blogs(); track blog._id) {
+        <div class="card card-hover flex-column" style="padding: 0; overflow: hidden; height: 100%;">
+          <div style="height: 200px;">
+            <img [src]="blog.featuredImage || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'" [alt]="blog.title" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div style="padding: 24px; flex-grow: 1;" class="flex-column">
+            <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--secondary-color); margin-bottom: 8px; display: block;">
+              {{ blog.createdAt | date }}
+            </span>
+            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; color: var(--primary-color);">{{ blog.title }}</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; line-height: 1.5; flex-grow: 1;">
+              {{ blog.summary }}
+            </p>
+            <a [routerLink]="['/blog', blog.slug]" class="btn btn-outline" style="align-self: flex-start; font-size: 0.8rem; padding: 8px 20px;">
+              Read Article
+            </a>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>

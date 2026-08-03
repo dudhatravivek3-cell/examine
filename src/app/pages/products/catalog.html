@@ -1,0 +1,94 @@
+<!-- Header -->
+<section class="page-header products-header text-center flex-center">
+  <div class="header-overlay"></div>
+  <div class="header-content container text-light slide-up">
+    <h1>Our Product Catalog</h1>
+    <p>Premium agricultural harvests, organic spices, fresh crops, and logistics-grade packaging.</p>
+  </div>
+</section>
+
+<!-- Main Page Layout -->
+<section class="catalog-section container slide-up" style="margin-top: 60px; margin-bottom: 80px;">
+  <div class="catalog-layout">
+    <!-- Sidebar: Filters -->
+    <aside class="catalog-sidebar flex-column">
+      <div class="sidebar-block card">
+        <h4 class="sidebar-title">Search Products</h4>
+        <form (submit)="onSearch()" class="search-form flex">
+          <input type="text" [(ngModel)]="searchQuery" name="search" placeholder="Type keyword..." class="form-control">
+          <button type="submit" class="btn btn-secondary search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </form>
+      </div>
+
+      <div class="sidebar-block card" style="margin-top: 24px;">
+        <h4 class="sidebar-title">Categories</h4>
+        <ul class="category-filter-list">
+          <li>
+            <button (click)="selectCategory('')" [class.active]="selectedCategory() === ''" class="category-filter-btn">
+              All Categories
+            </button>
+          </li>
+          @for (cat of categories(); track cat._id) {
+            <li>
+              <button (click)="selectCategory(cat.slug)" [class.active]="selectedCategory() === cat.slug" class="category-filter-btn">
+                {{ cat.name }}
+              </button>
+            </li>
+          }
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Grid Content -->
+    <div class="catalog-content flex-column">
+      <div class="catalog-header-meta flex-between" style="margin-bottom: 24px;">
+        <p style="color: var(--text-muted); font-weight: 500;">Found {{ totalProducts() }} premium items</p>
+      </div>
+
+      @if (products().length === 0) {
+        <div class="empty-catalog text-center card flex-column flex-center" style="padding: 80px 0;">
+          <span style="font-size: 3rem; margin-bottom: 16px; color: var(--secondary-color);"><i class="fa-solid fa-seedling"></i></span>
+          <h4>No Products Found</h4>
+          <p style="color: var(--text-muted); margin-top: 8px;">Try refining your keyword search or select a different category filter.</p>
+        </div>
+      } @else {
+        <div class="products-grid grid grid-3">
+          @for (prod of products(); track prod._id) {
+            <div class="product-card card card-hover flex-column" style="padding: 0; overflow: hidden; height: 100%;">
+              <div class="product-img-container" style="height: 200px; position: relative; overflow: hidden;">
+                <img [src]="prod.images[0] || 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=400&q=80'" [alt]="prod.name" style="width: 100%; height: 100%; object-fit: cover;">
+                <span class="product-category-tag">{{ prod.categoryId?.name }}</span>
+              </div>
+              <div class="product-details flex-column" style="padding: 20px; flex-grow: 1;">
+                <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 8px;">{{ prod.name }}</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px; flex-grow: 1; line-height: 1.5;">
+                  {{ prod.description | slice:0:90 }}...
+                </p>
+                <div class="product-meta-row flex-between" style="border-top: 1px solid var(--border-color); padding-top: 12px; margin-bottom: 16px; font-size: 0.8rem; font-weight: 600;">
+                  <span><i class="fa-solid fa-location-dot" style="color: var(--secondary-color); margin-right: 6px;"></i> Origin: {{ prod.origin || 'India' }}</span>
+                  <span style="color: var(--secondary-color);">MOQ: {{ prod.moq || '1 Container' }}</span>
+                </div>
+                <a [routerLink]="['/products', prod.slug]" class="btn btn-primary btn-product-details">View Specifications</a>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Pagination Controllers -->
+        @if (totalPages() > 1) {
+          <div class="pagination flex-center" style="margin-top: 48px; gap: 8px;">
+            <button (click)="changePage(currentPage() - 1)" [disabled]="currentPage() === 1" class="page-btn">&larr;</button>
+            
+            @for (page of [].constructor(totalPages()); track $index; let idx = $index) {
+              <button (click)="changePage(idx + 1)" [class.active]="currentPage() === (idx + 1)" class="page-btn">
+                {{ idx + 1 }}
+              </button>
+            }
+
+            <button (click)="changePage(currentPage() + 1)" [disabled]="currentPage() === totalPages()" class="page-btn">&rarr;</button>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</section>

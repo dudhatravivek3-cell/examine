@@ -1,0 +1,21 @@
+/* Thumbnails selector active state */
+.thumb-btn {
+  border: 2px solid transparent;
+  transition: var(--transition-fast);
+}
+
+.thumb-btn.active {
+  border-color: var(--secondary-color);
+  box-shadow: var(--shadow-md);
+}
+
+/* Specifications Table styling */
+.specs-table th {
+  padding: 16px 24px;
+}
+
+.specs-table td {
+  padding: 16px 24px;
+}
+
+

@@ -1,0 +1,32 @@
+<div class="login-wrapper flex-center" style="min-height: calc(100vh - 80px); background-color: var(--bg-color);">
+  <div class="login-card card" style="width: 100%; max-width: 400px; padding: 40px;">
+    <div class="login-header text-center" style="margin-bottom: 30px;">
+      <i class="fa-solid fa-lock" style="font-size: 3rem; color: var(--secondary-color); display: block; margin-bottom: 15px;"></i>
+      <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--primary-color); margin-top: 12px; margin-bottom: 6px;">Admin Panel Login</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem;">Sign in to manage product listings, quote requests, and website details.</p>
+    </div>
+
+    <!-- Error block -->
+    <div *ngIf="errorMessage()" class="alert alert-danger" style="margin-bottom: 20px;">
+      {{ errorMessage() }}
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="flex-column" style="gap: 16px;">
+      <div class="form-group">
+        <label class="form-label" for="username">Username / Email</label>
+        <input type="text" id="username" name="username" [(ngModel)]="username" required #usernameInput="ngModel" class="form-control" placeholder="e.g. admin">
+        <div *ngIf="usernameInput.invalid && usernameInput.touched" class="form-error">Username is required.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input type="password" id="password" name="password" [(ngModel)]="password" required #passwordInput="ngModel" class="form-control" placeholder="••••••••">
+        <div *ngIf="passwordInput.invalid && passwordInput.touched" class="form-error">Password is required.</div>
+      </div>
+
+      <button type="submit" [disabled]="!loginForm.form.valid || submitting()" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+        {{ submitting() ? 'Signing in...' : 'Sign In' }}
+      </button>
+    </form>
+  </div>
+</div>

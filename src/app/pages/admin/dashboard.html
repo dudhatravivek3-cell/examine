@@ -1,0 +1,885 @@
+<div class="dash-page-container slide-up">
+  
+  <!-- Executive Top Header Bar -->
+  <header class="dash-top-bar">
+    <div class="dash-brand">
+      <div class="dash-brand-icon">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <div>
+        <h1 class="dash-title">Examine Control Center</h1>
+        <p class="dash-subtitle">Global Trade Operations & Management Portal</p>
+      </div>
+    </div>
+
+    <div class="dash-user-profile">
+      <div class="user-avatar-badge">
+        <i class="fa-solid fa-user-tie"></i>
+      </div>
+      <div class="user-info-text">
+        <span class="user-name">{{ authService.currentUser()?.username || 'Administrator' }}</span>
+        <span class="user-role-tag"><i class="fa-solid fa-circle status-dot"></i> Online &bull; Super Admin</span>
+      </div>
+      <button (click)="onLogout()" class="dash-logout-btn">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Metric KPI Cards Bar -->
+  <div class="dash-metrics-grid">
+    <div class="metric-card" (click)="setTab('products')" [class.active-metric]="activeTab() === 'products'">
+      <div class="metric-icon-box bg-blue">
+        <i class="fa-solid fa-boxes-stacked"></i>
+      </div>
+      <div class="metric-details">
+        <span class="metric-val">{{ products().length }}</span>
+        <span class="metric-label">Total Products</span>
+      </div>
+    </div>
+
+    <div class="metric-card" (click)="setTab('categories')" [class.active-metric]="activeTab() === 'categories'">
+      <div class="metric-icon-box bg-teal">
+        <i class="fa-solid fa-layer-group"></i>
+      </div>
+      <div class="metric-details">
+        <span class="metric-val">{{ categories().length }}</span>
+        <span class="metric-label">Product Categories</span>
+      </div>
+    </div>
+
+    <div class="metric-card" (click)="setTab('inquiries')" [class.active-metric]="activeTab() === 'inquiries'">
+      <div class="metric-icon-box bg-amber">
+        <i class="fa-solid fa-envelope-open-text"></i>
+      </div>
+      <div class="metric-details">
+        <div class="flex-align-gap">
+          <span class="metric-val">{{ inquiries().length }}</span>
+          <span *ngIf="newInquiriesCount > 0" class="new-badge-pill">{{ newInquiriesCount }} New</span>
+        </div>
+        <span class="metric-label">Client Inquiries</span>
+      </div>
+    </div>
+
+    <div class="metric-card" (click)="setTab('quotes')" [class.active-metric]="activeTab() === 'quotes'">
+      <div class="metric-icon-box bg-purple">
+        <i class="fa-solid fa-file-contract"></i>
+      </div>
+      <div class="metric-details">
+        <div class="flex-align-gap">
+          <span class="metric-val">{{ quotes().length }}</span>
+          <span *ngIf="newQuotesCount > 0" class="new-badge-pill">{{ newQuotesCount }} New</span>
+        </div>
+        <span class="metric-label">Quote Requests</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Dashboard Workspace -->
+  <div class="dash-workspace-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="dash-sidebar-panel">
+      <div class="sidebar-header-label">Navigation Menu</div>
+      <nav class="dash-nav-menu">
+        <button (click)="setTab('products')" [class.active]="activeTab() === 'products'" class="dash-nav-item">
+          <i class="fa-solid fa-box-open nav-icon"></i>
+          <span>Products Manager</span>
+          <span class="nav-count-chip">{{ products().length }}</span>
+        </button>
+
+        <button (click)="setTab('categories')" [class.active]="activeTab() === 'categories'" class="dash-nav-item">
+          <i class="fa-solid fa-folder-tree nav-icon"></i>
+          <span>Categories Manager</span>
+          <span class="nav-count-chip">{{ categories().length }}</span>
+        </button>
+
+        <button (click)="setTab('inquiries')" [class.active]="activeTab() === 'inquiries'" class="dash-nav-item">
+          <i class="fa-solid fa-inbox nav-icon"></i>
+          <span>Inquiries Inbox</span>
+          <span class="nav-count-chip" [class.highlight-chip]="newInquiriesCount > 0">{{ inquiries().length }}</span>
+        </button>
+
+        <button (click)="setTab('quotes')" [class.active]="activeTab() === 'quotes'" class="dash-nav-item">
+          <i class="fa-solid fa-file-invoice-dollar nav-icon"></i>
+          <span>Quote Requests</span>
+          <span class="nav-count-chip" [class.highlight-chip]="newQuotesCount > 0">{{ quotes().length }}</span>
+        </button>
+
+        <button (click)="setTab('stats')" [class.active]="activeTab() === 'stats'" class="dash-nav-item">
+          <i class="fa-solid fa-chart-line nav-icon"></i>
+          <span>Home Statistics</span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content Workspace -->
+    <main class="dash-content-panel">
+      
+      <!-- ========================================== -->
+      <!-- TAB 1: PRODUCTS MANAGER -->
+      <!-- ========================================== -->
+      @if (activeTab() === 'products') {
+        <div class="panel-section flex-column" style="gap: 20px;">
+          <div class="flex-between">
+            <h3>Manage Products</h3>
+            <button (click)="openAddProduct()" class="btn btn-secondary" style="padding: 8px 20px; font-size: 0.85rem;">+ Add New Product</button>
+          </div>
+
+          <!-- Table Wrapper -->
+          <div class="dash-table-card">
+            <table class="dash-data-table">
+              <thead>
+                <tr>
+                  <th>Product Details</th>
+                  <th>Category</th>
+                  <th>MOQ</th>
+                  <th>Origin</th>
+                  <th class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (prod of filteredProducts; track prod._id) {
+                  <tr>
+                    <td>
+                      <div class="product-cell-meta">
+                        <div class="prod-img-thumb">
+                          <img [src]="prod.images?.[0] || 'https://images.unsplash.com/photo-1595246140625-573b715d11dc?auto=format&fit=crop&w=120&q=80'" alt="product thumbnail">
+                        </div>
+                        <div>
+                          <strong class="prod-title-text">{{ prod.name }}</strong>
+                          <span class="prod-sub-desc">{{ prod.description | slice:0:60 }}...</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span class="category-pill-badge">{{ prod.categoryId?.name || 'Unassigned' }}</span></td>
+                    <td><span class="moq-tag">{{ prod.moq || 'N/A' }}</span></td>
+                    <td><span class="origin-text"><i class="fa-solid fa-location-dot"></i> {{ prod.origin || 'India' }}</span></td>
+                    <td class="text-right">
+                      <div class="action-btn-group">
+                        <button (click)="openEditProduct(prod)" class="dash-action-btn edit-btn" title="Edit Product">
+                          <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
+                        <button (click)="onDeleteProduct(prod._id)" class="dash-action-btn delete-btn" title="Delete Product">
+                          <i class="fa-solid fa-trash-can"></i> Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="5" class="empty-table-cell">
+                      <i class="fa-solid fa-box-open empty-icon"></i>
+                      <p>No products found matching your search filter.</p>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+
+      <!-- ========================================== -->
+      <!-- TAB 2: CATEGORIES MANAGER -->
+      <!-- ========================================== -->
+      @if (activeTab() === 'categories') {
+        <div class="dash-panel-block">
+          <div class="dash-panel-header">
+            <div>
+              <h2 class="panel-title"><i class="fa-solid fa-folder-tree title-icon"></i> Product Categories</h2>
+              <p class="panel-subtitle">Organize product catalog classifications and high-level taxonomy.</p>
+            </div>
+            <button (click)="openAddCategory()" class="dash-btn-primary">
+              <i class="fa-solid fa-plus"></i> Add New Category
+            </button>
+          </div>
+
+          <div class="dash-table-card">
+            <table class="dash-data-table">
+              <thead>
+                <tr>
+                  <th>Category Cover</th>
+                  <th>Category Name</th>
+                  <th>URL Slug</th>
+                  <th class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (cat of categories(); track cat._id) {
+                  <tr>
+                    <td>
+                      <img [src]="cat.imageUrl || 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=120&q=80'" alt="category" class="cat-table-cover">
+                    </td>
+                    <td>
+                      <strong class="prod-title-text">{{ cat.name }}</strong>
+                      <p class="prod-sub-desc">{{ cat.description || 'No description provided.' }}</p>
+                    </td>
+                    <td><code class="slug-code-badge">/products/{{ cat.slug }}</code></td>
+                    <td class="text-right">
+                      <div class="action-btn-group">
+                        <button (click)="openEditCategory(cat)" class="dash-action-btn edit-btn">
+                          <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
+                        <button (click)="onDeleteCategory(cat._id)" class="dash-action-btn delete-btn">
+                          <i class="fa-solid fa-trash-can"></i> Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="4" class="empty-table-cell">
+                      <i class="fa-solid fa-folder-open empty-icon"></i>
+                      <p>No categories created yet.</p>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+
+      <!-- ========================================== -->
+      <!-- TAB 3: INQUIRIES INBOX -->
+      <!-- ========================================== -->
+      @if (activeTab() === 'inquiries') {
+        <div class="dash-panel-block">
+          <div class="dash-panel-header">
+            <div>
+              <h2 class="panel-title"><i class="fa-solid fa-inbox title-icon"></i> Inquiries Inbox</h2>
+              <p class="panel-subtitle">Review and manage general trade inquiries sent by global buyers.</p>
+            </div>
+          </div>
+
+          <div class="inquiry-cards-stream">
+            @for (inq of inquiries(); track inq._id) {
+              <div class="inquiry-card" [class.read-card]="inq.status !== 'new'">
+                <div class="inquiry-card-header">
+                  <div class="sender-avatar-box">
+                    <i class="fa-solid fa-user-tie"></i>
+                  </div>
+                  <div class="sender-details">
+                    <h3 class="sender-name">{{ inq.name }}</h3>
+                    <span class="sender-meta">
+                      <i class="fa-solid fa-building"></i> {{ inq.company || 'Private Buyer' }} &bull; 
+                      <i class="fa-solid fa-globe"></i> {{ inq.country }} &bull; 
+                      <i class="fa-solid fa-envelope"></i> {{ inq.email }} &bull; 
+                      <i class="fa-solid fa-phone"></i> {{ inq.phone }}
+                    </span>
+                  </div>
+                  
+                  <span class="status-badge-chip" [class.status-new]="inq.status === 'new'" [class.status-replied]="inq.status === 'replied'">
+                    {{ inq.status | uppercase }}
+                  </span>
+                </div>
+
+                <div class="inquiry-body-text">
+                  <div class="interest-badge-row">
+                    <strong>Target Interest:</strong> <span class="highlight-interest">{{ inq.productInterest || 'General Inquiry' }}</span>
+                  </div>
+                  <p class="message-content">{{ inq.message }}</p>
+                </div>
+
+                <div class="inquiry-card-footer">
+                  <div class="status-selector-wrapper">
+                    <label class="status-select-label">Update Status:</label>
+                    <select (change)="updateInquiry(inq._id, $any($event.target).value)" class="dash-select-control">
+                      <option value="new" [selected]="inq.status === 'new'">New</option>
+                      <option value="read" [selected]="inq.status === 'read'">Read</option>
+                      <option value="replied" [selected]="inq.status === 'replied'">Replied</option>
+                    </select>
+                  </div>
+                  
+                  <button (click)="onDeleteInquiry(inq._id)" class="dash-action-btn delete-btn">
+                    <i class="fa-solid fa-trash-can"></i> Remove Inquiry
+                  </button>
+                </div>
+              </div>
+            } @empty {
+              <div class="empty-inbox-card">
+                <i class="fa-solid fa-envelope-circle-check empty-icon"></i>
+                <h3>No Inquiries Found</h3>
+                <p>All client messages have been reviewed.</p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ========================================== -->
+      <!-- TAB 4: QUOTE REQUESTS -->
+      <!-- ========================================== -->
+      @if (activeTab() === 'quotes') {
+        <div class="dash-panel-block">
+          <div class="dash-panel-header">
+            <div>
+              <h2 class="panel-title"><i class="fa-solid fa-file-invoice-dollar title-icon"></i> Quote Requests</h2>
+              <p class="panel-subtitle">Process custom commodity price quotes and shipping container estimates.</p>
+            </div>
+          </div>
+
+          <div class="inquiry-cards-stream">
+            @for (qt of quotes(); track qt._id) {
+              <div class="inquiry-card quote-border-card" [class.read-card]="qt.status !== 'new'">
+                <div class="inquiry-card-header">
+                  <div class="sender-avatar-box quote-avatar-box">
+                    <i class="fa-solid fa-file-contract"></i>
+                  </div>
+                  <div class="sender-details">
+                    <h3 class="sender-name">{{ qt.name }}</h3>
+                    <span class="sender-meta">
+                      <i class="fa-solid fa-building"></i> {{ qt.companyName || 'N/A' }} &bull; 
+                      <i class="fa-solid fa-globe"></i> {{ qt.country }} &bull; 
+                      <i class="fa-solid fa-envelope"></i> {{ qt.email }} &bull; 
+                      <i class="fa-solid fa-phone"></i> {{ qt.phone }}
+                    </span>
+                  </div>
+
+                  <span class="status-badge-chip" [class.status-new]="qt.status === 'new'" [class.status-replied]="qt.status === 'processed'">
+                    {{ qt.status | uppercase }}
+                  </span>
+                </div>
+
+                <div class="quote-specs-row">
+                  <div class="spec-pill"><i class="fa-solid fa-box"></i> Product: <strong>{{ qt.productName }}</strong></div>
+                  <div class="spec-pill"><i class="fa-solid fa-weight-hanging"></i> Quantity: <strong>{{ qt.quantity }}</strong></div>
+                </div>
+
+                <div class="inquiry-body-text">
+                  <p class="message-content">{{ qt.message || 'No additional message details specified.' }}</p>
+                </div>
+
+                <div class="inquiry-card-footer">
+                  <div class="status-selector-wrapper">
+                    <label class="status-select-label">Quote Status:</label>
+                    <select (change)="updateQuote(qt._id, $any($event.target).value)" class="dash-select-control">
+                      <option value="new" [selected]="qt.status === 'new'">New</option>
+                      <option value="pending" [selected]="qt.status === 'pending'">Pending</option>
+                      <option value="processed" [selected]="qt.status === 'processed'">Processed</option>
+                    </select>
+                  </div>
+
+                  <button (click)="onDeleteQuote(qt._id)" class="dash-action-btn delete-btn">
+                    <i class="fa-solid fa-trash-can"></i> Delete Quote Log
+                  </button>
+                </div>
+              </div>
+            } @empty {
+              <div class="empty-inbox-card">
+                <i class="fa-solid fa-file-circle-check empty-icon"></i>
+                <h3>No Quote Requests</h3>
+                <p>New container quote submissions will appear here.</p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ========================================== -->
+      <!-- TAB 5: BLOGS & NEWS MANAGER -->
+      <!-- ========================================== -->
+      @if (activeTab() === 'blogs') {
+        <div class="dash-panel-block">
+          <div class="dash-panel-header">
+            <div>
+              <h2 class="panel-title"><i class="fa-solid fa-newspaper title-icon"></i> Blogs & News Articles</h2>
+              <p class="panel-subtitle">Publish industry news, logistics updates, and market insights.</p>
+            </div>
+            <button (click)="openAddBlog()" class="dash-btn-primary">
+              <i class="fa-solid fa-plus"></i> Add New Article
+            </button>
+          </div>
+
+          <div class="dash-table-card">
+            <table class="dash-data-table">
+              <thead>
+                <tr>
+                  <th>Article Header</th>
+                  <th>Summary</th>
+                  <th>Date</th>
+                  <th class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (blog of blogs(); track blog._id) {
+                  <tr>
+                    <td>
+                      <div class="product-cell-meta">
+                        <div class="prod-img-thumb">
+                          <img [src]="blog.featuredImage || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=120&q=80'" alt="blog cover">
+                        </div>
+                        <div>
+                          <strong class="prod-title-text">{{ blog.title }}</strong>
+                          <code class="slug-code-badge">/blog/{{ blog.slug }}</code>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span class="prod-sub-desc">{{ blog.summary | slice:0:75 }}...</span></td>
+                    <td><span class="origin-text">{{ blog.createdAt | date:'mediumDate' }}</span></td>
+                    <td class="text-right">
+                      <div class="action-btn-group">
+                        <button (click)="openEditBlog(blog)" class="dash-action-btn edit-btn">
+                          <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
+                        <button (click)="onDeleteBlog(blog._id)" class="dash-action-btn delete-btn">
+                          <i class="fa-solid fa-trash-can"></i> Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="4" class="empty-table-cell">
+                      <i class="fa-solid fa-newspaper empty-icon"></i>
+                      <p>No blog posts published yet.</p>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+
+      <!-- ========================================== -->
+      <!-- TAB 6: OPERATIONS GALLERY -->
+      <!-- ========================================== -->
+      @if (activeTab() === 'gallery') {
+        <div class="dash-panel-block">
+          <div class="dash-panel-header">
+            <div>
+              <h2 class="panel-title"><i class="fa-solid fa-images title-icon"></i> Operations Gallery</h2>
+              <p class="panel-subtitle">Manage facility photos, packaging showcases, and logistics photos.</p>
+            </div>
+            <button (click)="openAddGallery()" class="dash-btn-primary">
+              <i class="fa-solid fa-plus"></i> Upload Photo
+            </button>
+          </div>
+
+          <div class="dash-table-card">
+            <table class="dash-data-table">
+              <thead>
+                <tr>
+                  <th>Photo</th>
+                  <th>Title</th>
+                  <th>Category Tag</th>
+                  <th class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of galleryItems(); track item._id) {
+                  <tr>
+                    <td>
+                      <img [src]="item.imageUrl" alt="gallery photo" class="cat-table-cover">
+                    </td>
+                    <td><strong class="prod-title-text">{{ item.title || 'Untitled Showcase' }}</strong></td>
+                    <td><span class="category-pill-badge">{{ item.category }}</span></td>
+                    <td class="text-right">
+                      <button (click)="onDeleteGallery(item._id)" class="dash-action-btn delete-btn">
+                        <i class="fa-solid fa-trash-can"></i> Delete Photo
+                      </button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="4" class="empty-table-cell">
+                      <i class="fa-solid fa-images empty-icon"></i>
+                      <p>No photos in operations gallery.</p>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+
+      <!-- ========================================== -->
+      <!-- TAB 7: CERTIFICATIONS -->
+      <!-- ========================================== -->
+      @if (activeTab() === 'certifications') {
+        <div class="dash-panel-block">
+          <div class="dash-panel-header">
+            <div>
+              <h2 class="panel-title"><i class="fa-solid fa-award title-icon"></i> Certifications & Licenses</h2>
+              <p class="panel-subtitle">Manage government accreditations, APEDA licenses, and quality compliance certificates.</p>
+            </div>
+            <button (click)="openAddCert()" class="dash-btn-primary">
+              <i class="fa-solid fa-plus"></i> Add Certification
+            </button>
+          </div>
+
+          <div class="dash-table-card">
+            <table class="dash-data-table">
+              <thead>
+                <tr>
+                  <th>Certificate Title</th>
+                  <th>Description</th>
+                  <th>Document / Image</th>
+                  <th class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (cert of certifications(); track cert._id) {
+                  <tr>
+                    <td><strong class="prod-title-text"><i class="fa-solid fa-certificate" style="color: var(--accent-hover); margin-right: 6px;"></i> {{ cert.title }}</strong></td>
+                    <td><span class="prod-sub-desc">{{ cert.description || 'No description' }}</span></td>
+                    <td>
+                      <a *ngIf="cert.pdfUrl" [href]="cert.pdfUrl" target="_blank" class="slug-code-badge"><i class="fa-solid fa-file-pdf"></i> View Document</a>
+                      <span *ngIf="!cert.pdfUrl" class="origin-text">N/A</span>
+                    </td>
+                    <td class="text-right">
+                      <div class="action-btn-group">
+                        <button (click)="openEditCert(cert)" class="dash-action-btn edit-btn">
+                          <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
+                        <button (click)="onDeleteCert(cert._id)" class="dash-action-btn delete-btn">
+                          <i class="fa-solid fa-trash-can"></i> Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="4" class="empty-table-cell">
+                      <i class="fa-solid fa-award empty-icon"></i>
+                      <p>No certifications added yet.</p>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+
+      <!-- ========================================== -->
+      <!-- TAB 8: HOME STATISTICS COUNTERS -->
+      <!-- ========================================== -->
+      @if (activeTab() === 'stats') {
+        <div class="dash-panel-block">
+          <div class="dash-panel-header">
+            <div>
+              <h2 class="panel-title"><i class="fa-solid fa-chart-line title-icon"></i> Homepage Statistics Counters</h2>
+              <p class="panel-subtitle">Update public metrics displayed on the homepage stats bar.</p>
+            </div>
+          </div>
+
+          <form (submit)="onSaveStats()" class="dash-form-card">
+            <div class="dash-form-grid">
+              <div class="dash-form-group">
+                <label class="dash-form-label" for="stat-countries">Countries Served</label>
+                <div class="input-icon-box">
+                  <i class="fa-solid fa-earth-americas input-icon"></i>
+                  <input type="number" id="stat-countries" name="countriesServed" [(ngModel)]="statsData.countriesServed" required class="dash-form-input">
+                </div>
+              </div>
+
+              <div class="dash-form-group">
+                <label class="dash-form-label" for="stat-shipments">Shipments Completed</label>
+                <div class="input-icon-box">
+                  <i class="fa-solid fa-truck-fast input-icon"></i>
+                  <input type="number" id="stat-shipments" name="shipments" [(ngModel)]="statsData.shipments" required class="dash-form-input">
+                </div>
+              </div>
+
+              <div class="dash-form-group">
+                <label class="dash-form-label" for="stat-experience">Years of Experience</label>
+                <div class="input-icon-box">
+                  <i class="fa-solid fa-award input-icon"></i>
+                  <input type="number" id="stat-experience" name="yearsExperience" [(ngModel)]="statsData.yearsExperience" required class="dash-form-input">
+                </div>
+              </div>
+
+              <div class="dash-form-group">
+                <label class="dash-form-label" for="stat-clients">Happy Overseas Clients</label>
+                <div class="input-icon-box">
+                  <i class="fa-solid fa-face-smile input-icon"></i>
+                  <input type="number" id="stat-clients" name="happyClients" [(ngModel)]="statsData.happyClients" required class="dash-form-input">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions-bar">
+              <button type="submit" class="dash-btn-primary">
+                <i class="fa-solid fa-floppy-disk"></i> Save & Publish Statistics
+              </button>
+            </div>
+          </form>
+        </div>
+      }
+
+    </main>
+  </div>
+</div>
+
+
+<!-- ========================================== -->
+<!-- MODAL: ADD/EDIT CATEGORY -->
+<!-- ========================================== -->
+<div *ngIf="showCategoryModal()" class="dash-modal-overlay flex-center fade-in">
+  <div class="dash-modal-card slide-up">
+    <div class="modal-card-header">
+      <h3>
+        <i class="fa-solid fa-folder-plus header-icon"></i> 
+        {{ isEditCategory() ? 'Edit Product Category' : 'Add New Category' }}
+      </h3>
+      <button (click)="showCategoryModal.set(false)" class="modal-close-icon" aria-label="Close">&times;</button>
+    </div>
+
+    <form (ngSubmit)="onSubmitCategory()" #catForm="ngForm" class="modal-card-body">
+      <div class="dash-form-group">
+        <label class="dash-form-label" for="cat-name">Category Name *</label>
+        <input type="text" id="cat-name" name="name" [(ngModel)]="categoryForm.name" required #catNameInput="ngModel" class="dash-form-input" placeholder="e.g. Organic Spices">
+        <div *ngIf="catNameInput.invalid && catNameInput.touched" class="field-error-msg">Category name is required.</div>
+      </div>
+
+      <div class="dash-form-group">
+        <label class="dash-form-label" for="cat-desc">Description</label>
+        <textarea id="cat-desc" name="description" [(ngModel)]="categoryForm.description" rows="3" class="dash-form-input" placeholder="Brief summary of category products..."></textarea>
+      </div>
+
+      <div class="dash-form-group">
+        <label class="dash-form-label" for="cat-img">Image URL</label>
+        <input type="text" id="cat-img" name="imageUrl" [(ngModel)]="categoryForm.imageUrl" class="dash-form-input" placeholder="https://images.unsplash.com/...">
+      </div>
+      
+      <div class="modal-card-footer">
+        <button type="button" (click)="showCategoryModal.set(false)" class="dash-btn-secondary-outline">Cancel</button>
+        <button type="submit" (click)="onSubmitCategory()" [disabled]="!catForm.form.valid" class="dash-btn-primary">Save Category</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL: ADD/EDIT PRODUCT -->
+<!-- ========================================== -->
+<div *ngIf="showProductModal()" class="dash-modal-overlay flex-center fade-in">
+  <div class="dash-modal-card dash-modal-lg slide-up">
+    <div class="modal-card-header">
+      <h3>
+        <i class="fa-solid fa-box-open header-icon"></i> 
+        {{ isEditProduct() ? 'Edit Product Specifications' : 'Add New Export Product' }}
+      </h3>
+      <button (click)="showProductModal.set(false)" class="modal-close-icon" aria-label="Close">&times;</button>
+    </div>
+
+    <form (ngSubmit)="onSubmitProduct()" #prodForm="ngForm" class="modal-card-body">
+      <div class="modal-grid-2">
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="prod-cat">Category *</label>
+          <select id="prod-cat" name="categoryId" [(ngModel)]="productForm.categoryId" required #prodCatInput="ngModel" class="dash-form-input">
+            <option value="">Select Category</option>
+            @for (cat of categories(); track cat._id) {
+              <option [value]="cat._id">{{ cat.name }}</option>
+            }
+          </select>
+          <div *ngIf="prodCatInput.invalid && prodCatInput.touched" class="field-error-msg">Category is required.</div>
+        </div>
+
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="prod-name">Product Name *</label>
+          <input type="text" id="prod-name" name="name" [(ngModel)]="productForm.name" required #prodNameInput="ngModel" class="dash-form-input" placeholder="e.g. Premium Basmati Rice">
+          <div *ngIf="prodNameInput.invalid && prodNameInput.touched" class="field-error-msg">Product name is required.</div>
+        </div>
+      </div>
+
+      <div class="dash-form-group">
+        <label class="dash-form-label" for="prod-desc">Description *</label>
+        <textarea id="prod-desc" name="description" [(ngModel)]="productForm.description" required #prodDescInput="ngModel" rows="3" class="dash-form-input" placeholder="Detailed product specifications and export highlights..."></textarea>
+        <div *ngIf="prodDescInput.invalid && prodDescInput.touched" class="field-error-msg">Description is required.</div>
+      </div>
+
+      <div class="modal-grid-2">
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="prod-origin">Origin Location</label>
+          <input type="text" id="prod-origin" name="origin" [(ngModel)]="productForm.origin" class="dash-form-input" placeholder="e.g. Gujarat, India">
+        </div>
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="prod-moq">Minimum Order Quantity (MOQ)</label>
+          <input type="text" id="prod-moq" name="moq" [(ngModel)]="productForm.moq" class="dash-form-input" placeholder="e.g. 20 Metric Tons">
+        </div>
+      </div>
+
+      <div class="modal-grid-2">
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="prod-pkg">Packaging Details</label>
+          <input type="text" id="prod-pkg" name="packagingInfo" [(ngModel)]="productForm.packagingInfo" class="dash-form-input" placeholder="e.g. 25kg PP bags / Jute bags">
+        </div>
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="prod-avail">Export Availability</label>
+          <input type="text" id="prod-avail" name="exportAvailability" [(ngModel)]="productForm.exportAvailability" class="dash-form-input" placeholder="e.g. Year-round / Harvest Season">
+        </div>
+      </div>
+
+      <!-- Primary Cover Image -->
+      <div class="dash-form-group">
+        <label class="dash-form-label" for="prod-image">Cover Image URL *</label>
+        <input type="text" id="prod-image" name="image0" [(ngModel)]="productForm.images[0]" required #prodImgInput="ngModel" class="dash-form-input" placeholder="Primary product image URL">
+        <div *ngIf="prodImgInput.invalid && prodImgInput.touched" class="field-error-msg">Cover image URL is required.</div>
+      </div>
+
+      <!-- Technical Specifications Section -->
+      <div class="spec-builder-block">
+        <label class="dash-form-label">Technical Specification Parameters</label>
+        <p class="field-help-text">Define quality parameters like Moisture, Purity, Admixture, Grain Length, etc.</p>
+
+        <div class="spec-rows-container">
+          @for (spec of productForm.specifications; track $index; let idx = $index) {
+            <div class="spec-input-row">
+              <input type="text" name="specKey{{idx}}" [(ngModel)]="spec.key" placeholder="Parameter (e.g. Moisture)" class="dash-form-input">
+              <input type="text" name="specVal{{idx}}" [(ngModel)]="spec.value" placeholder="Value (e.g. Max 12%)" class="dash-form-input">
+              <button type="button" (click)="removeFormSpec(idx)" class="spec-remove-btn" title="Remove parameter">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          }
+        </div>
+        <button type="button" (click)="addFormSpec()" class="dash-btn-secondary-outline btn-sm">
+          <i class="fa-solid fa-plus"></i> Add Specification Row
+        </button>
+      </div>
+
+      <div class="modal-card-footer">
+        <button type="button" (click)="showProductModal.set(false)" class="dash-btn-secondary-outline">Cancel</button>
+        <button type="submit" (click)="onSubmitProduct()" [disabled]="!prodForm.form.valid" class="dash-btn-primary">Save Product</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL: ADD/EDIT BLOG -->
+<!-- ========================================== -->
+<div *ngIf="showBlogModal()" class="dash-modal-overlay flex-center fade-in">
+  <div class="dash-modal-card dash-modal-lg slide-up">
+    <div class="modal-card-header">
+      <h3>
+        <i class="fa-solid fa-newspaper header-icon"></i> 
+        {{ isEditBlog() ? 'Edit News Article' : 'Publish New Article' }}
+      </h3>
+      <button (click)="showBlogModal.set(false)" class="modal-close-icon" aria-label="Close">&times;</button>
+    </div>
+
+    <form (ngSubmit)="onSubmitBlog()" #blogFormRef="ngForm" class="modal-card-body">
+      <div class="dash-form-group">
+        <label class="dash-form-label" for="blog-title">Article Title *</label>
+        <input type="text" id="blog-title" name="title" [(ngModel)]="blogForm.title" required #blogTitleInput="ngModel" class="dash-form-input" placeholder="e.g. Ocean Freight Rate Trends for Q3 2026">
+        <div *ngIf="blogTitleInput.invalid && blogTitleInput.touched" class="field-error-msg">Title is required.</div>
+      </div>
+
+      <div class="dash-form-group">
+        <label class="dash-form-label" for="blog-summary">Short Summary *</label>
+        <textarea id="blog-summary" name="summary" [(ngModel)]="blogForm.summary" required #blogSumInput="ngModel" rows="2" class="dash-form-input" placeholder="Brief abstract summarizing key article insights..."></textarea>
+        <div *ngIf="blogSumInput.invalid && blogSumInput.touched" class="field-error-msg">Summary is required.</div>
+      </div>
+
+      <div class="dash-form-group">
+        <label class="dash-form-label" for="blog-content">Full Body Content *</label>
+        <textarea id="blog-content" name="content" [(ngModel)]="blogForm.content" required #blogContentInput="ngModel" rows="5" class="dash-form-input" placeholder="Detailed post content and report paragraphs..."></textarea>
+        <div *ngIf="blogContentInput.invalid && blogContentInput.touched" class="field-error-msg">Content is required.</div>
+      </div>
+
+      <div class="modal-grid-2">
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="blog-img">Featured Image URL</label>
+          <input type="text" id="blog-img" name="featuredImage" [(ngModel)]="blogForm.featuredImage" class="dash-form-input" placeholder="https://images.unsplash.com/...">
+        </div>
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="blog-slug">URL Slug (Optional)</label>
+          <input type="text" id="blog-slug" name="slug" [(ngModel)]="blogForm.slug" class="dash-form-input" placeholder="e.g. ocean-freight-trends-q3">
+        </div>
+      </div>
+
+      <div class="modal-card-footer">
+        <button type="button" (click)="showBlogModal.set(false)" class="dash-btn-secondary-outline">Cancel</button>
+        <button type="submit" (click)="onSubmitBlog()" [disabled]="!blogFormRef.form.valid" class="dash-btn-primary">Save Article</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL: ADD GALLERY ITEM -->
+<!-- ========================================== -->
+<div *ngIf="showGalleryModal()" class="dash-modal-overlay flex-center fade-in">
+  <div class="dash-modal-card slide-up">
+    <div class="modal-card-header">
+      <h3>
+        <i class="fa-solid fa-images header-icon"></i> Upload Operations Photo
+      </h3>
+      <button (click)="showGalleryModal.set(false)" class="modal-close-icon" aria-label="Close">&times;</button>
+    </div>
+
+    <form (ngSubmit)="onSubmitGallery()" #galFormRef="ngForm" class="modal-card-body">
+      <div class="dash-form-group">
+        <label class="dash-form-label" for="gal-title">Photo Title / Caption</label>
+        <input type="text" id="gal-title" name="title" [(ngModel)]="galleryForm.title" class="dash-form-input" placeholder="e.g. Optical Color Sorting Facility">
+      </div>
+
+      <div class="dash-form-group">
+        <label class="dash-form-label" for="gal-cat">Category Tag *</label>
+        <select id="gal-cat" name="category" [(ngModel)]="galleryForm.category" required class="dash-form-input">
+          <option value="Products">Products</option>
+          <option value="Packaging">Packaging</option>
+          <option value="Production">Production</option>
+          <option value="Logistics">Logistics</option>
+          <option value="Team">Team</option>
+        </select>
+      </div>
+
+      <div class="dash-form-group">
+        <label class="dash-form-label" for="gal-img">Image URL *</label>
+        <input type="text" id="gal-img" name="imageUrl" [(ngModel)]="galleryForm.imageUrl" required #galImgInput="ngModel" class="dash-form-input" placeholder="https://images.unsplash.com/...">
+        <div *ngIf="galImgInput.invalid && galImgInput.touched" class="field-error-msg">Image URL is required.</div>
+      </div>
+
+      <div class="modal-card-footer">
+        <button type="button" (click)="showGalleryModal.set(false)" class="dash-btn-secondary-outline">Cancel</button>
+        <button type="submit" (click)="onSubmitGallery()" [disabled]="!galFormRef.form.valid" class="dash-btn-primary">Save Photo</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL: ADD/EDIT CERTIFICATION -->
+<!-- ========================================== -->
+<div *ngIf="showCertModal()" class="dash-modal-overlay flex-center fade-in">
+  <div class="dash-modal-card slide-up">
+    <div class="modal-card-header">
+      <h3>
+        <i class="fa-solid fa-award header-icon"></i> 
+        {{ isEditCert() ? 'Edit Certification' : 'Add Certification / License' }}
+      </h3>
+      <button (click)="showCertModal.set(false)" class="modal-close-icon" aria-label="Close">&times;</button>
+    </div>
+
+    <form (ngSubmit)="onSubmitCert()" #certFormRef="ngForm" class="modal-card-body">
+      <div class="dash-form-group">
+        <label class="dash-form-label" for="cert-title">Certificate Title *</label>
+        <input type="text" id="cert-title" name="title" [(ngModel)]="certForm.title" required #certTitleInput="ngModel" class="dash-form-input" placeholder="e.g. APEDA Export Registration License">
+        <div *ngIf="certTitleInput.invalid && certTitleInput.touched" class="field-error-msg">Title is required.</div>
+      </div>
+
+      <div class="dash-form-group">
+        <label class="dash-form-label" for="cert-desc">Description</label>
+        <textarea id="cert-desc" name="description" [(ngModel)]="certForm.description" rows="3" class="dash-form-input" placeholder="Details regarding license compliance and quality scope..."></textarea>
+      </div>
+
+      <div class="dash-form-group">
+        <label class="dash-form-label" for="cert-pdf">PDF Document / Image Link</label>
+        <input type="text" id="cert-pdf" name="pdfUrl" [(ngModel)]="certForm.pdfUrl" class="dash-form-input" placeholder="https://...">
+      </div>
+
+      <div class="modal-card-footer">
+        <button type="button" (click)="showCertModal.set(false)" class="dash-btn-secondary-outline">Cancel</button>
+        <button type="submit" (click)="onSubmitCert()" [disabled]="!certFormRef.form.valid" class="dash-btn-primary">Save Certification</button>
+      </div>
+    </form>
+  </div>
+</div>
+

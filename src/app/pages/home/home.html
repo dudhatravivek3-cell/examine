@@ -1,0 +1,301 @@
+<!-- Hero Section -->
+<section class="hero-section flex-center">
+  <div class="hero-overlay"></div>
+  <div class="container hero-content text-light slide-up">
+    <span class="hero-badge"><i class="fa-solid fa-globe" style="margin-right: 8px; color: var(--secondary-color);"></i> GLOBAL LEADER IN IMPORT-EXPORT</span>
+    <h1 class="hero-title text-light">Connecting Indian Quality <br><span class="highlight-text">with Global Markets</span></h1>
+    <p class="hero-lead">
+      We are a premier international trade company specializing in the bulk export of premium agricultural produce, organic spices, fresh harvests, and manufactured goods.
+    </p>
+    <div class="hero-actions flex">
+      <a routerLink="/products" class="btn btn-secondary">Explore Products</a>
+      <a routerLink="/contact" class="btn btn-outline btn-outline-white">Get a Quote</a>
+    </div>
+  </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="stats-section">
+  <div class="container grid grid-4">
+    <div class="stat-card flex-column flex-center card card-hover">
+      <span class="stat-icon" style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 12px;"><i class="fa-solid fa-earth-americas"></i></span>
+      <h3 class="stat-number">{{ stats().countriesServed }}+</h3>
+      <p class="stat-label">Countries Served</p>
+    </div>
+    <div class="stat-card flex-column flex-center card card-hover">
+      <span class="stat-icon" style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 12px;"><i class="fa-solid fa-box"></i></span>
+      <h3 class="stat-number">{{ stats().shipments }}+</h3>
+      <p class="stat-label">Shipments Delivered</p>
+    </div>
+    <div class="stat-card flex-column flex-center card card-hover">
+      <span class="stat-icon" style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 12px;"><i class="fa-solid fa-hourglass-half"></i></span>
+      <h3 class="stat-number">{{ stats().yearsExperience }}+</h3>
+      <p class="stat-label">Years of Experience</p>
+    </div>
+    <div class="stat-card flex-column flex-center card card-hover">
+      <span class="stat-icon" style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 12px;"><i class="fa-solid fa-handshake"></i></span>
+      <h3 class="stat-number">{{ stats().happyClients }}+</h3>
+      <p class="stat-label">Happy Clients</p>
+    </div>
+  </div>
+</section>
+
+<!-- About Company Preview -->
+<section class="about-preview-section">
+  <div class="container grid grid-2">
+    <div class="about-image-wrapper">
+      <div class="about-image-overlay"></div>
+      <img src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=800&q=80" alt="Export Logistics" class="about-img">
+    </div>
+    <div class="about-preview-content flex-column">
+      <span class="section-subtitle">WHO WE ARE</span>
+      <h2 class="section-title text-left">Delivering Excellence Internationally</h2>
+      <p class="about-text">
+        Examine Export Services is built on a foundation of reliability, trust, and premium quality. We source directly from standard farms and production units in India, ensuring our agricultural products maintain their organic properties, fresh taste, and safety standards during shipping.
+      </p>
+      <p class="about-text">
+        Our logistics and quality control teams inspect every single shipment before packing, ensuring strict compliance with APEDA, FSSAI, and global ISO food packaging specifications.
+      </p>
+      <div class="about-bullets flex-column">
+        <div class="bullet-item flex">
+          <span class="bullet-icon">✓</span>
+          <span>100% Certified Organic & Standard Products</span>
+        </div>
+        <div class="bullet-item flex">
+          <span class="bullet-icon">✓</span>
+          <span>Customized Packaging & Moisture-Controlled Shipping</span>
+        </div>
+        <div class="bullet-item flex">
+          <span class="bullet-icon">✓</span>
+          <span>Competitive Pricing & Real-Time Tracking Updates</span>
+        </div>
+      </div>
+      <a routerLink="/about" class="btn btn-primary self-start">Read More About Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- Product Categories Section -->
+<section class="categories-section">
+  <div class="container">
+    <div class="section-title-container">
+      <span class="section-subtitle">OUR RANGE</span>
+      <h2 class="section-title">Product Categories</h2>
+    </div>
+
+    @if (categories().length === 0) {
+      <div class="loading-state text-center">
+        <p>Loading premium product categories...</p>
+      </div>
+    } @else {
+      <div class="categories-grid grid grid-4">
+        @for (cat of categories(); track cat._id) {
+          <div class="category-card card card-hover flex-column">
+            <div class="category-img-wrapper">
+              <img [src]="cat.imageUrl || 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=400&q=80'" [alt]="cat.name" class="category-img">
+            </div>
+            <div class="category-info flex-column">
+              <h3 class="category-name">{{ cat.name }}</h3>
+              <p class="category-desc">{{ cat.description | slice:0:70 }}...</p>
+              <a [routerLink]="['/products']" [queryParams]="{category: cat.slug}" class="btn btn-secondary category-btn">View Details</a>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="why-choose-us-section">
+  <div class="container">
+    <div class="section-title-container">
+      <span class="section-subtitle">THE ADVANTAGE</span>
+      <h2 class="section-title">Why Choose Us</h2>
+    </div>
+    
+    <div class="grid grid-3">
+      <div class="icon-box card card-hover text-center">
+        <div class="box-icon-container" style="font-size: 2rem; color: var(--secondary-color); margin-bottom: 16px;"><i class="fa-solid fa-award"></i></div>
+        <h3>Premium Quality</h3>
+        <p>Strict quality controls and direct sourcing ensure standard grades on agricultural and manufactured products.</p>
+      </div>
+      <div class="icon-box card card-hover text-center">
+        <div class="box-icon-container" style="font-size: 2rem; color: var(--secondary-color); margin-bottom: 16px;"><i class="fa-solid fa-globe"></i></div>
+        <h3>Global Network</h3>
+        <p>Strategic logistics partnerships guarantee robust cargo shipping and port customs management across 30+ countries.</p>
+      </div>
+      <div class="icon-box card card-hover text-center">
+        <div class="box-icon-container" style="font-size: 2rem; color: var(--secondary-color); margin-bottom: 16px;"><i class="fa-solid fa-hourglass-half"></i></div>
+        <h3>Timely Delivery</h3>
+        <p>Moisture-controlled cargo and scheduled transport guarantee your products arrive fresh and on schedule.</p>
+      </div>
+      <div class="icon-box card card-hover text-center">
+        <div class="box-icon-container" style="font-size: 2rem; color: var(--secondary-color); margin-bottom: 16px;"><i class="fa-solid fa-tag"></i></div>
+        <h3>Competitive Pricing</h3>
+        <p>Direct farm sourcing cuts brokers and middle-men fees, giving you premium items at wholesale prices.</p>
+      </div>
+      <div class="icon-box card card-hover text-center">
+        <div class="box-icon-container" style="font-size: 2rem; color: var(--secondary-color); margin-bottom: 16px;"><i class="fa-solid fa-box"></i></div>
+        <h3>Secure Packaging</h3>
+        <p>Advanced vacuum packaging, air-tight boxes, and container insulation protect cargo from temperature spikes.</p>
+      </div>
+      <div class="icon-box card card-hover text-center">
+        <div class="box-icon-container" style="font-size: 2rem; color: var(--secondary-color); margin-bottom: 16px;"><i class="fa-solid fa-file-invoice"></i></div>
+        <h3>Full Compliance</h3>
+        <p>We provide complete documentation including Certificates of Origin, APEDA licenses, Phytosanitary certificates, and lab reports.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Export Process Section -->
+<section class="process-section">
+  <div class="container">
+    <div class="section-title-container">
+      <span class="section-subtitle">OUR WORKFLOW</span>
+      <h2 class="section-title">The Export Process</h2>
+    </div>
+
+    <div class="timeline flex-column">
+      <div class="timeline-item flex">
+        <div class="timeline-badge">1</div>
+        <div class="timeline-panel card">
+          <h4>Inquiry & Quote</h4>
+          <p>Submit your product inquiry or quote request. Our trade experts analyze specification requirements and reply within 12 hours.</p>
+        </div>
+      </div>
+      <div class="timeline-item flex">
+        <div class="timeline-badge">2</div>
+        <div class="timeline-panel card">
+          <h4>Quotation & Terms</h4>
+          <p>We supply proforma invoices detailing CIF/FOB pricing, payment terms, and packaging options for approval.</p>
+        </div>
+      </div>
+      <div class="timeline-item flex">
+        <div class="timeline-badge">3</div>
+        <div class="timeline-panel card">
+          <h4>Quality Sourcing & Packaging</h4>
+          <p>Products are sourced directly from verified farms and packed under sanitised, temperature-controlled facilities.</p>
+        </div>
+      </div>
+      <div class="timeline-item flex">
+        <div class="timeline-badge">4</div>
+        <div class="timeline-panel card">
+          <h4>Logistics & Shipment</h4>
+          <p>We process all port customs, load insulated freight containers, and coordinate standard ocean/air cargo transport.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Map Section -->
+<section class="map-section">
+  <div class="container">
+    <div class="section-title-container">
+      <span class="section-subtitle">OUR REACH</span>
+      <h2 class="section-title">Countries We Export To</h2>
+    </div>
+    
+    <div class="map-container-wrapper card">
+      <!-- Embed Leaflet Map Component -->
+      <app-map></app-map>
+    </div>
+  </div>
+</section>
+
+<!-- Certifications Section -->
+<section class="certs-section">
+  <div class="container">
+    <div class="section-title-container">
+      <span class="section-subtitle">TRUST & COMPLIANCE</span>
+      <h2 class="section-title">Our Certifications</h2>
+    </div>
+
+    @if (certifications().length === 0) {
+      <!-- Fallback display if database is empty -->
+      <div class="certs-grid flex flex-center" style="gap: 40px; flex-wrap: wrap;">
+        <span class="cert-logo-mock">APEDA</span>
+        <span class="cert-logo-mock">FSSAI</span>
+        <span class="cert-logo-mock">IEC</span>
+        <span class="cert-logo-mock">ISO 9001</span>
+        <span class="cert-logo-mock">GST</span>
+        <span class="cert-logo-mock">MSME</span>
+      </div>
+    } @else {
+      <div class="certs-grid flex flex-center" style="gap: 40px; flex-wrap: wrap;">
+        @for (cert of certifications(); track cert._id) {
+          <div class="cert-logo-wrapper card card-hover flex-center">
+            <img [src]="cert.imageUrl" [alt]="cert.name" class="cert-logo-img">
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+@if (testimonials().length > 0) {
+  <section class="testimonials-section">
+    <div class="container">
+      <div class="section-title-container">
+        <span class="section-subtitle">CLIENT STORIES</span>
+        <h2 class="section-title">What Our Buyers Say</h2>
+      </div>
+
+      <div class="testimonial-slider-container card flex-column flex-center">
+        @for (test of testimonials(); track test._id; let idx = $index) {
+          @if (idx === activeTestimonialIndex()) {
+            <div class="testimonial-slide text-center slide-up">
+              <span class="quote-symbol">“</span>
+              <p class="testimonial-review">{{ test.review }}</p>
+              <h4 class="testimonial-name">{{ test.customerName }}</h4>
+              <p class="testimonial-meta">{{ test.companyName }} &bull; {{ test.country }}</p>
+            </div>
+          }
+        }
+        <div class="slider-controls flex">
+          <button (click)="prevTestimonial()" class="slider-btn" aria-label="Previous testimonial">&larr;</button>
+          <button (click)="nextTestimonial()" class="slider-btn" aria-label="Next testimonial">&rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+}
+
+<!-- FAQs Section -->
+@if (faqs().length > 0) {
+  <section class="faq-section">
+    <div class="container">
+      <div class="section-title-container">
+        <span class="section-subtitle">QUESTIONS</span>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+      </div>
+
+      <div class="faq-accordion flex-column">
+        @for (faq of faqs(); track faq._id; let idx = $index) {
+          <div class="faq-item card" [class.active]="idx === activeFaqIndex()">
+            <button (click)="toggleFaq(idx)" class="faq-question flex-between">
+              <span>{{ faq.question }}</span>
+              <span class="faq-icon">{{ idx === activeFaqIndex() ? '−' : '+' }}</span>
+            </button>
+            <div class="faq-answer" [class.show]="idx === activeFaqIndex()">
+              <p>{{ faq.answer }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+}
+
+<!-- CTA Get Started Section -->
+<section class="cta-section flex-center text-center">
+  <div class="cta-overlay"></div>
+  <div class="container cta-content text-light slide-up">
+    <h2>Ready to Import High-Quality Products?</h2>
+    <p>Get in touch with our export division to negotiate custom orders, request logistics rates, and receive sample quotes.</p>
+    <a routerLink="/contact" class="btn btn-secondary">Request a Quote Now</a>
+  </div>
+</section>

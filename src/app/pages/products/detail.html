@@ -1,0 +1,159 @@
+<div class="container product-detail-container slide-up" style="margin-top: 40px; margin-bottom: 80px;">
+  <!-- Back Link -->
+  <a routerLink="/products" class="back-link" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: var(--secondary-color); margin-bottom: 30px;">
+    &larr; Back to Catalog
+  </a>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-state text-center" style="padding: 80px 0;">
+      <p>Loading premium specifications...</p>
+    </div>
+  } @else if (!product()) {
+    <div class="empty-product text-center card" style="padding: 80px 0;">
+      <h4>Product Not Found</h4>
+      <a routerLink="/products" class="btn btn-primary" style="margin-top: 16px;">Return to Catalog</a>
+    </div>
+  } @else {
+    <!-- Main specifications columns -->
+    <div class="grid grid-2" style="gap: 48px;">
+      <!-- Left Column: Image switcher -->
+      <div class="product-gallery flex-column" style="gap: 16px;">
+        <div class="main-image-wrapper card" style="padding: 0; overflow: hidden; height: 400px; display: flex; align-items: center; justify-content: center; background-color: #FFFFFF;">
+          <img [src]="selectedImage()" [alt]="product().name" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+        </div>
+        
+        <!-- Thumbnails row -->
+        @if (product().images && product().images.length > 1) {
+          <div class="thumbnails flex" style="gap: 12px; flex-wrap: wrap;">
+            @for (img of product().images; track img) {
+              <button (click)="selectImage(img)" [class.active]="selectedImage() === img" class="thumb-btn card" style="padding: 0; overflow: hidden; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background-color: #FFFFFF; cursor: pointer; border-radius: var(--radius-sm);">
+                <img [src]="img" alt="thumbnail" style="max-width: 100%; max-height: 100%; object-fit: cover;">
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Right Column: Specs intro -->
+      <div class="product-info-panel flex-column" style="gap: 24px;">
+        <div>
+          <span class="product-category-label" style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--secondary-color); letter-spacing: 1px;">
+            {{ product().categoryId?.name }}
+          </span>
+          <h2 style="font-size: 2rem; font-weight: 800; color: var(--primary-color); margin-top: 6px; margin-bottom: 12px;">
+            {{ product().name }}
+          </h2>
+          <p style="color: var(--text-muted); font-size: 1.05rem; line-height: 1.6;">
+            {{ product().description }}
+          </p>
+        </div>
+
+        <!-- Quick stats specs card -->
+        <div class="quick-specs-card card" style="background-color: var(--bg-color); border: none; padding: 20px;">
+          <ul class="quick-specs-list" style="list-style: none; display: flex; flex-direction: column; gap: 12px;">
+            <li class="flex" style="gap: 12px; font-weight: 600;"><span style="color: var(--secondary-color); width: 20px; display: inline-block; text-align: center;"><i class="fa-solid fa-location-dot"></i></span> Origin: <span style="font-weight: 400; color: var(--text-dark);">{{ product().origin || 'India' }}</span></li>
+            <li class="flex" style="gap: 12px; font-weight: 600;"><span style="color: var(--secondary-color); width: 20px; display: inline-block; text-align: center;"><i class="fa-solid fa-box"></i></span> Packaging: <span style="font-weight: 400; color: var(--text-dark);">{{ product().packagingInfo || 'Custom standard bags' }}</span></li>
+            <li class="flex" style="gap: 12px; font-weight: 600;"><span style="color: var(--secondary-color); width: 20px; display: inline-block; text-align: center;"><i class="fa-solid fa-chart-simple"></i></span> MOQ: <span style="font-weight: 400; color: var(--text-dark);">{{ product().moq || '1 Container' }}</span></li>
+            <li class="flex" style="gap: 12px; font-weight: 600;"><span style="color: var(--secondary-color); width: 20px; display: inline-block; text-align: center;"><i class="fa-solid fa-ship"></i></span> Availability: <span style="font-weight: 400; color: var(--text-dark);">{{ product().exportAvailability || 'Year-round' }}</span></li>
+          </ul>
+        </div>
+
+        <button (click)="openQuoteModal()" class="btn btn-secondary self-start" style="padding: 14px 40px; font-size: 1.05rem; box-shadow: 0 4px 14px rgba(24, 169, 153, 0.35);">
+          Get Wholesale Price Quote
+        </button>
+      </div>
+    </div>
+
+    <!-- Specs details parameter table -->
+    @if (product().specifications && product().specifications.size > 0) {
+      <div class="product-specs-table-container" style="margin-top: 60px;">
+        <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; color: var(--primary-color);">Technical Specifications</h3>
+        <div class="card" style="padding: 0; overflow: hidden; border-radius: var(--radius-sm);">
+          <table class="specs-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+              <tr style="background-color: var(--primary-color); color: #FFFFFF;">
+                <th style="padding: 16px 24px; font-weight: 700;">Specification Parameter</th>
+                <th style="padding: 16px 24px; font-weight: 700;">Value / Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (spec of product().specifications | keyvalue; track spec.key; let isEven = $even) {
+                <tr [style.background-color]="isEven ? '#FFFFFF' : 'var(--bg-color)'" style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 16px 24px; font-weight: 700; color: var(--text-dark);">{{ spec.key }}</td>
+                  <td style="padding: 16px 24px; color: var(--text-muted);">{{ spec.value }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  }
+</div>
+
+<!-- Modal: Quote Request Form -->
+<div *ngIf="showQuoteModal()" class="modal-overlay flex-center fade-in">
+  <div class="modal-content card slide-up" style="max-width: 600px; width: 90%; position: relative;">
+    <button (click)="closeQuoteModal()" class="modal-close-btn" aria-label="Close modal">&times;</button>
+    
+    <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--primary-color); margin-bottom: 8px;">Request FOB/CIF Wholesale Quote</h3>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px;">Product: <strong style="color: var(--secondary-color);">{{ product()?.name }}</strong></p>
+
+    <!-- Feedback banners -->
+    <div *ngIf="quoteSuccess()" class="alert alert-success">{{ quoteSuccess() }}</div>
+    <div *ngIf="quoteError()" class="alert alert-danger">{{ quoteError() }}</div>
+
+    <form (ngSubmit)="onSubmitQuote()" #quoteForm="ngForm" class="flex-column" style="gap: 16px;">
+      <div class="grid grid-2">
+        <div class="form-group">
+          <label class="form-label" for="quote-name">Your Name *</label>
+          <input type="text" id="quote-name" name="name" [(ngModel)]="quoteData.name" required #nameInput="ngModel" class="form-control">
+          <div *ngIf="nameInput.invalid && nameInput.touched" class="form-error">Name is required.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="quote-email">Business Email *</label>
+          <input type="email" id="quote-email" name="email" [(ngModel)]="quoteData.email" required email #emailInput="ngModel" class="form-control">
+          <div *ngIf="emailInput.invalid && emailInput.touched" class="form-error">Valid email is required.</div>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="form-group">
+          <label class="form-label" for="quote-company">Company Name</label>
+          <input type="text" id="quote-company" name="companyName" [(ngModel)]="quoteData.companyName" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="quote-country">Import Country *</label>
+          <input type="text" id="quote-country" name="country" [(ngModel)]="quoteData.country" required #countryInput="ngModel" class="form-control" placeholder="e.g. United States">
+          <div *ngIf="countryInput.invalid && countryInput.touched" class="form-error">Country is required.</div>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="form-group">
+          <label class="form-label" for="quote-phone">Phone / WhatsApp</label>
+          <input type="text" id="quote-phone" name="phone" [(ngModel)]="quoteData.phone" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="quote-quantity">Quantity Required *</label>
+          <input type="text" id="quote-quantity" name="quantity" [(ngModel)]="quoteData.quantity" required #qtyInput="ngModel" class="form-control" placeholder="e.g. 50 Metric Tons">
+          <div *ngIf="qtyInput.invalid && qtyInput.touched" class="form-error">Quantity is required.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="quote-message">Special Packing / Shipping Terms *</label>
+        <textarea id="quote-message" name="message" [(ngModel)]="quoteData.message" required rows="4" #msgInput="ngModel" class="form-control" placeholder="Describe required port terms (FOB Mundra/CIF Hamburg), certificate demands, or customized bags/packaging..."></textarea>
+        <div *ngIf="msgInput.invalid && msgInput.touched" class="form-error">Detailed specifications are required.</div>
+      </div>
+
+      <div class="flex" style="gap: 12px; justify-content: flex-end; margin-top: 10px;">
+        <button type="button" (click)="closeQuoteModal()" class="btn btn-outline" style="padding: 10px 24px;">Cancel</button>
+        <button type="submit" [disabled]="!quoteForm.form.valid || submittingQuote()" class="btn btn-secondary" style="padding: 10px 28px;">
+          {{ submittingQuote() ? 'Submitting Request...' : 'Send Quote Request' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

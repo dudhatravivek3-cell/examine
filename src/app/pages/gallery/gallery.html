@@ -1,0 +1,55 @@
+<!-- Page Header -->
+<section class="page-header gallery-header text-center flex-center">
+  <div class="header-overlay"></div>
+  <div class="header-content container text-light slide-up">
+    <h1>Our Operations Gallery</h1>
+    <p>Visual overview of our direct farm sourcing, logistics processing, customized packaging, and team operations.</p>
+  </div>
+</section>
+
+<!-- Filter Navigation & Grid -->
+<section class="gallery-container container slide-up" style="margin-top: 60px; margin-bottom: 80px;">
+  <!-- Filters Bar -->
+  <div class="gallery-filters flex flex-center" style="gap: 12px; margin-bottom: 40px; flex-wrap: wrap;">
+    <button (click)="filterCategory('')" [class.active]="selectedCategory() === ''" class="btn btn-outline">All Photos</button>
+    <button (click)="filterCategory('Products')" [class.active]="selectedCategory() === 'Products'" class="btn btn-outline">Products</button>
+    <button (click)="filterCategory('Packaging')" [class.active]="selectedCategory() === 'Packaging'" class="btn btn-outline">Packaging</button>
+    <button (click)="filterCategory('Production')" [class.active]="selectedCategory() === 'Production'" class="btn btn-outline">Production</button>
+    <button (click)="filterCategory('Logistics')" [class.active]="selectedCategory() === 'Logistics'" class="btn btn-outline">Logistics</button>
+    <button (click)="filterCategory('Team')" [class.active]="selectedCategory() === 'Team'" class="btn btn-outline">Team</button>
+  </div>
+
+  @if (galleryItems().length === 0) {
+    <!-- Fallback items if database is empty -->
+    <div class="grid grid-3">
+      <div (click)="openLightbox('https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=800&q=80')" class="gallery-item-card card card-hover" style="padding:0; overflow:hidden; height:260px; cursor:pointer;">
+        <img src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=800&q=80" alt="Logistics Cargo" style="width:100%; height:100%; object-fit:cover;">
+      </div>
+      <div (click)="openLightbox('https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80')" class="gallery-item-card card card-hover" style="padding:0; overflow:hidden; height:260px; cursor:pointer;">
+        <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=800&q=80" alt="Grains Processing" style="width:100%; height:100%; object-fit:cover;">
+      </div>
+      <div (click)="openLightbox('https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80')" class="gallery-item-card card card-hover" style="padding:0; overflow:hidden; height:260px; cursor:pointer;">
+        <img src="https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80" alt="Packaging Line" style="width:100%; height:100%; object-fit:cover;">
+      </div>
+    </div>
+  } @else {
+    <div class="grid grid-3">
+      @for (item of galleryItems(); track item._id) {
+        <div (click)="openLightbox(item.imageUrl)" class="gallery-item-card card card-hover" style="padding: 0; overflow: hidden; height: 260px; cursor: pointer; position: relative;">
+          <img [src]="item.imageUrl" [alt]="item.title" style="width: 100%; height: 100%; object-fit: cover; transition: transform var(--transition-normal);">
+          <div class="gallery-hover-overlay flex-center">
+            <span style="font-size: 1.5rem;">🔍</span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>
+
+<!-- Lightbox Modal popup -->
+<div *ngIf="showLightbox()" class="lightbox-overlay flex-center fade-in" (click)="closeLightbox()">
+  <button class="lightbox-close-btn" (click)="closeLightbox()">&times;</button>
+  <div class="lightbox-img-wrapper" (click)="$event.stopPropagation()">
+    <img [src]="lightboxImage()" alt="Zoomed Operation View" class="lightbox-img">
+  </div>
+</div>
