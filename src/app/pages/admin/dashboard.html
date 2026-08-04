@@ -56,7 +56,9 @@
       <div class="metric-details">
         <div class="flex-align-gap">
           <span class="metric-val">{{ inquiries().length }}</span>
-          <span *ngIf="newInquiriesCount > 0" class="new-badge-pill">{{ newInquiriesCount }} New</span>
+          @if (newInquiriesCount() > 0) {
+            <span class="new-badge-pill">{{ newInquiriesCount() }} New</span>
+          }
         </div>
         <span class="metric-label">Client Inquiries</span>
       </div>
@@ -69,7 +71,9 @@
       <div class="metric-details">
         <div class="flex-align-gap">
           <span class="metric-val">{{ quotes().length }}</span>
-          <span *ngIf="newQuotesCount > 0" class="new-badge-pill">{{ newQuotesCount }} New</span>
+          @if (newQuotesCount() > 0) {
+            <span class="new-badge-pill">{{ newQuotesCount() }} New</span>
+          }
         </div>
         <span class="metric-label">Quote Requests</span>
       </div>
@@ -97,13 +101,42 @@
         <button (click)="setTab('inquiries')" [class.active]="activeTab() === 'inquiries'" class="dash-nav-item">
           <i class="fa-solid fa-inbox nav-icon"></i>
           <span>Inquiries Inbox</span>
-          <span class="nav-count-chip" [class.highlight-chip]="newInquiriesCount > 0">{{ inquiries().length }}</span>
+          <span class="nav-count-chip" [class.highlight-chip]="newInquiriesCount() > 0">{{ inquiries().length }}</span>
         </button>
 
         <button (click)="setTab('quotes')" [class.active]="activeTab() === 'quotes'" class="dash-nav-item">
           <i class="fa-solid fa-file-invoice-dollar nav-icon"></i>
           <span>Quote Requests</span>
-          <span class="nav-count-chip" [class.highlight-chip]="newQuotesCount > 0">{{ quotes().length }}</span>
+          <span class="nav-count-chip" [class.highlight-chip]="newQuotesCount() > 0">{{ quotes().length }}</span>
+        </button>
+
+        <button (click)="setTab('company')" [class.active]="activeTab() === 'company'" class="dash-nav-item">
+          <i class="fa-solid fa-building nav-icon"></i>
+          <span>Company & Site Settings</span>
+        </button>
+
+        <button (click)="setTab('images')" [class.active]="activeTab() === 'images'" class="dash-nav-item">
+          <i class="fa-solid fa-images nav-icon"></i>
+          <span>Image Master</span>
+          <span class="nav-count-chip">{{ imageMasterItems().length }}</span>
+        </button>
+
+        <button (click)="setTab('certifications')" [class.active]="activeTab() === 'certifications'" class="dash-nav-item">
+          <i class="fa-solid fa-certificate nav-icon"></i>
+          <span>Certifications</span>
+          <span class="nav-count-chip">{{ certifications().length }}</span>
+        </button>
+
+        <button (click)="setTab('gallery')" [class.active]="activeTab() === 'gallery'" class="dash-nav-item">
+          <i class="fa-solid fa-photo-film nav-icon"></i>
+          <span>Operations Gallery</span>
+          <span class="nav-count-chip">{{ galleryItems().length }}</span>
+        </button>
+
+        <button (click)="setTab('blogs')" [class.active]="activeTab() === 'blogs'" class="dash-nav-item">
+          <i class="fa-solid fa-newspaper nav-icon"></i>
+          <span>Industry Blogs</span>
+          <span class="nav-count-chip">{{ blogs().length }}</span>
         </button>
 
         <button (click)="setTab('stats')" [class.active]="activeTab() === 'stats'" class="dash-nav-item">
@@ -121,9 +154,14 @@
       <!-- ========================================== -->
       @if (activeTab() === 'products') {
         <div class="panel-section flex-column" style="gap: 20px;">
-          <div class="flex-between">
-            <h3>Manage Products</h3>
-            <button (click)="openAddProduct()" class="btn btn-secondary" style="padding: 8px 20px; font-size: 0.85rem;">+ Add New Product</button>
+          <div class="dash-panel-header">
+            <div>
+              <h2 class="panel-title"><i class="fa-solid fa-box-open title-icon"></i> Manage Export Products</h2>
+              <p class="panel-subtitle">Catalog of premium export items, specifications, and cover images.</p>
+            </div>
+            <button (click)="openAddProduct()" class="dash-btn-primary">
+              <i class="fa-solid fa-plus"></i> Add New Product
+            </button>
           </div>
 
           <!-- Table Wrapper -->
@@ -139,7 +177,7 @@
                 </tr>
               </thead>
               <tbody>
-                @for (prod of filteredProducts; track prod._id) {
+                @for (prod of filteredProducts(); track prod._id) {
                   <tr>
                     <td>
                       <div class="product-cell-meta">
@@ -527,8 +565,11 @@
                     <td><strong class="prod-title-text"><i class="fa-solid fa-certificate" style="color: var(--accent-hover); margin-right: 6px;"></i> {{ cert.title }}</strong></td>
                     <td><span class="prod-sub-desc">{{ cert.description || 'No description' }}</span></td>
                     <td>
-                      <a *ngIf="cert.pdfUrl" [href]="cert.pdfUrl" target="_blank" class="slug-code-badge"><i class="fa-solid fa-file-pdf"></i> View Document</a>
-                      <span *ngIf="!cert.pdfUrl" class="origin-text">N/A</span>
+                      @if (cert.pdfUrl) {
+                        <a [href]="cert.pdfUrl" target="_blank" class="slug-code-badge"><i class="fa-solid fa-file-pdf"></i> View Document</a>
+                      } @else {
+                        <span class="origin-text">N/A</span>
+                      }
                     </td>
                     <td class="text-right">
                       <div class="action-btn-group">
@@ -611,6 +652,190 @@
         </div>
       }
 
+      <!-- ========================================== -->
+      <!-- TAB 9: COMPANY & SITE SETTINGS -->
+      <!-- ========================================== -->
+      @if (activeTab() === 'company') {
+        <div class="dash-panel-block">
+          <div class="dash-panel-header">
+            <div>
+              <h2 class="panel-title"><i class="fa-solid fa-building title-icon"></i> Company Details & Global Site Settings</h2>
+              <p class="panel-subtitle">Manage company identity, contact channels, leadership info, map embed, and translation languages.</p>
+            </div>
+          </div>
+
+          <form (submit)="onSaveCompanyDetails()" class="dash-form-card">
+            <h3 style="margin-bottom: 16px; color: var(--primary-color);">Company Identity & Contact Details</h3>
+            <div class="dash-form-grid" style="margin-bottom: 24px;">
+              <div class="dash-form-group">
+                <label class="dash-form-label" for="comp-name">Company Name *</label>
+                <input type="text" id="comp-name" name="companyName" [(ngModel)]="companyForm.companyName" required class="dash-form-input">
+              </div>
+
+              <div class="dash-form-group">
+                <label class="dash-form-label" for="comp-subtitle">Company Subtitle / Tagline</label>
+                <input type="text" id="comp-subtitle" name="subtitle" [(ngModel)]="companyForm.subtitle" class="dash-form-input">
+              </div>
+
+              <div class="dash-form-group" style="grid-column: span 2;">
+                <label class="dash-form-label" for="comp-desc">Company Overview / Description</label>
+                <textarea id="comp-desc" name="description" [(ngModel)]="companyForm.description" rows="3" class="dash-form-input"></textarea>
+              </div>
+
+              <div class="dash-form-group" style="grid-column: span 2;">
+                <label class="dash-form-label" for="comp-address">Head Office Address *</label>
+                <input type="text" id="comp-address" name="address" [(ngModel)]="companyForm.address" required class="dash-form-input">
+              </div>
+
+              <div class="dash-form-group">
+                <label class="dash-form-label" for="comp-phone">Phone Number *</label>
+                <input type="text" id="comp-phone" name="phone" [(ngModel)]="companyForm.phone" required class="dash-form-input">
+              </div>
+
+              <div class="dash-form-group">
+                <label class="dash-form-label" for="comp-whatsapp">WhatsApp Number</label>
+                <input type="text" id="comp-whatsapp" name="whatsapp" [(ngModel)]="companyForm.whatsapp" class="dash-form-input">
+              </div>
+
+              <div class="dash-form-group">
+                <label class="dash-form-label" for="comp-email">Contact Email *</label>
+                <input type="email" id="comp-email" name="email" [(ngModel)]="companyForm.email" required class="dash-form-input">
+              </div>
+
+              <div class="dash-form-group">
+                <label class="dash-form-label" for="comp-hours">Working Hours</label>
+                <input type="text" id="comp-hours" name="workingHours" [(ngModel)]="companyForm.workingHours" class="dash-form-input">
+              </div>
+            </div>
+
+            <div class="divider" style="margin: 24px 0; height: 1px; background: var(--border-color);"></div>
+
+            <h3 style="margin-bottom: 16px; color: var(--primary-color);">Leadership & Map Settings</h3>
+            <div class="dash-form-grid" style="margin-bottom: 24px;">
+              <div class="dash-form-group">
+                <label class="dash-form-label" for="owner-name">Owner / Director Name</label>
+                <input type="text" id="owner-name" name="ownerName" [(ngModel)]="companyForm.ownerName" class="dash-form-input">
+              </div>
+
+              <div class="dash-form-group">
+                <label class="dash-form-label" for="owner-title">Owner Title / Designation</label>
+                <input type="text" id="owner-title" name="ownerTitle" [(ngModel)]="companyForm.ownerTitle" class="dash-form-input">
+              </div>
+
+              <div class="dash-form-group" style="grid-column: span 2;">
+                <label class="dash-form-label" for="owner-quote">Director Message / Quote</label>
+                <textarea id="owner-quote" name="ownerQuote" [(ngModel)]="companyForm.ownerQuote" rows="2" class="dash-form-input"></textarea>
+              </div>
+
+              <div class="dash-form-group" style="grid-column: span 2;">
+                <label class="dash-form-label" for="comp-map">Google Maps Embed iframe URL (Contact Page Map)</label>
+                <input type="text" id="comp-map" name="googleMapEmbedUrl" [(ngModel)]="companyForm.googleMapEmbedUrl" class="dash-form-input" placeholder="https://www.google.com/maps/embed?...">
+              </div>
+            </div>
+
+            <div class="divider" style="margin: 24px 0; height: 1px; background: var(--border-color);"></div>
+
+            <div class="flex-between" style="margin-bottom: 16px;">
+              <h3 style="color: var(--primary-color);">Supported Translation Languages</h3>
+              <button type="button" (click)="addLanguage()" class="btn btn-secondary" style="padding: 6px 16px; font-size: 0.85rem;">+ Add Language</button>
+            </div>
+
+            <div class="flex-column" style="gap: 12px; margin-bottom: 24px;">
+              @for (lang of companyForm.supportedLanguages; track $index) {
+                <div class="flex" style="gap: 12px; align-items: center;">
+                  <input type="text" name="langCode_{{$index}}" [(ngModel)]="lang.code" placeholder="Language Code (e.g. en)" class="dash-form-input" style="width: 160px;">
+                  <input type="text" name="langName_{{$index}}" [(ngModel)]="lang.name" placeholder="Language Name (e.g. English)" class="dash-form-input" style="flex: 1;">
+                  <input type="text" name="langBadge_{{$index}}" [(ngModel)]="lang.badge" placeholder="Badge (e.g. EN)" class="dash-form-input" style="width: 100px;">
+                  <button type="button" (click)="removeLanguage($index)" class="dash-btn-icon btn-delete" title="Remove Language"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              }
+            </div>
+
+            <div class="form-actions-bar">
+              <button type="submit" class="dash-btn-primary">
+                <i class="fa-solid fa-floppy-disk"></i> Save & Update Company Details
+              </button>
+            </div>
+          </form>
+        </div>
+      }
+
+      <!-- ========================================== -->
+      <!-- TAB 10: IMAGE MASTER MODULE -->
+      <!-- ========================================== -->
+      @if (activeTab() === 'images') {
+        <div class="panel-section flex-column" style="gap: 20px;">
+          <div class="flex-between">
+            <div>
+              <h3>Image Master Dictionary</h3>
+              <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">Manage site image URLs by Name Key to update banners, profile photos, and fallback images dynamically.</p>
+            </div>
+            <button (click)="openAddImage()" class="btn btn-secondary" style="padding: 8px 20px; font-size: 0.85rem;">+ Add Image Entry</button>
+          </div>
+
+          <!-- Quick Key Generator Helper Chips -->
+          <div class="card" style="padding: 16px; background-color: var(--bg-color);">
+            <p style="font-weight: 600; margin-bottom: 8px; font-size: 0.85rem; color: var(--primary-color);">Click a Key Name below to quickly set up image entries:</p>
+            <div class="flex" style="gap: 8px; flex-wrap: wrap;">
+              <button type="button" (click)="openAddImage('hero_about_bg')" class="btn btn-outline" style="font-size: 0.75rem; padding: 4px 10px;">hero_about_bg</button>
+              <button type="button" (click)="openAddImage('owner_profile_photo')" class="btn btn-outline" style="font-size: 0.75rem; padding: 4px 10px;">owner_profile_photo</button>
+              <button type="button" (click)="openAddImage('facility_processing')" class="btn btn-outline" style="font-size: 0.75rem; padding: 4px 10px;">facility_processing</button>
+              <button type="button" (click)="openAddImage('facility_packaging')" class="btn btn-outline" style="font-size: 0.75rem; padding: 4px 10px;">facility_packaging</button>
+              <button type="button" (click)="openAddImage('facility_cold_storage')" class="btn btn-outline" style="font-size: 0.75rem; padding: 4px 10px;">facility_cold_storage</button>
+              <button type="button" (click)="openAddImage('default_product_cover')" class="btn btn-outline" style="font-size: 0.75rem; padding: 4px 10px;">default_product_cover</button>
+              <button type="button" (click)="openAddImage('default_category_cover')" class="btn btn-outline" style="font-size: 0.75rem; padding: 4px 10px;">default_category_cover</button>
+              <button type="button" (click)="openAddImage('default_gallery_cover')" class="btn btn-outline" style="font-size: 0.75rem; padding: 4px 10px;">default_gallery_cover</button>
+            </div>
+          </div>
+
+          <!-- Table Wrapper -->
+          <div class="dash-table-card">
+            <table class="dash-data-table">
+              <thead>
+                <tr>
+                  <th>Preview</th>
+                  <th>Image Key Name</th>
+                  <th>Image URL</th>
+                  <th>Description</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of imageMasterItems(); track item._id) {
+                  <tr>
+                    <td>
+                      <img [src]="item.imageUrl" [alt]="item.key" class="prod-thumb-img" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;">
+                    </td>
+                    <td>
+                      <strong style="color: var(--primary-color);">{{ item.key }}</strong>
+                    </td>
+                    <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.8rem;">
+                      {{ item.imageUrl }}
+                    </td>
+                    <td style="font-size: 0.85rem; color: var(--text-muted);">
+                      {{ item.description || '-' }}
+                    </td>
+                    <td style="text-align: right;">
+                      <div class="flex" style="gap: 8px; justify-content: flex-end;">
+                        <button (click)="openEditImage(item)" class="dash-btn-icon btn-edit" title="Edit Entry"><i class="fa-solid fa-pen"></i></button>
+                        <button (click)="onDeleteImage(item._id)" class="dash-btn-icon btn-delete" title="Delete Entry"><i class="fa-solid fa-trash"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="5" class="empty-table-cell">
+                      <i class="fa-solid fa-images empty-icon"></i>
+                      <p>No Image Master entries created yet.</p>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+
     </main>
   </div>
 </div>
@@ -619,267 +844,368 @@
 <!-- ========================================== -->
 <!-- MODAL: ADD/EDIT CATEGORY -->
 <!-- ========================================== -->
-<div *ngIf="showCategoryModal()" class="dash-modal-overlay flex-center fade-in">
-  <div class="dash-modal-card slide-up">
-    <div class="modal-card-header">
-      <h3>
-        <i class="fa-solid fa-folder-plus header-icon"></i> 
-        {{ isEditCategory() ? 'Edit Product Category' : 'Add New Category' }}
-      </h3>
-      <button (click)="showCategoryModal.set(false)" class="modal-close-icon" aria-label="Close">&times;</button>
+@if (showCategoryModal()) {
+  <div class="dash-modal-overlay flex-center fade-in">
+    <div class="dash-modal-card slide-up">
+      <div class="modal-card-header">
+        <h3>
+          <i class="fa-solid fa-folder-plus header-icon"></i> 
+          {{ isEditCategory() ? 'Edit Product Category' : 'Add New Category' }}
+        </h3>
+        <button (click)="showCategoryModal.set(false)" class="modal-close-icon" aria-label="Close">&times;</button>
+      </div>
+
+      <form (ngSubmit)="onSubmitCategory()" #catForm="ngForm" class="modal-card-body">
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="cat-name">Category Name *</label>
+          <input type="text" id="cat-name" name="name" [(ngModel)]="categoryForm.name" required #catNameInput="ngModel" class="dash-form-input" placeholder="e.g. Organic Spices">
+          @if (catNameInput.invalid && catNameInput.touched) {
+            <div class="field-error-msg">Category name is required.</div>
+          }
+        </div>
+
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="cat-desc">Description</label>
+          <textarea id="cat-desc" name="description" [(ngModel)]="categoryForm.description" rows="3" class="dash-form-input" placeholder="Brief summary of category products..."></textarea>
+        </div>
+
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="cat-img">Category Image</label>
+          <div class="flex" style="gap: 12px; align-items: center; margin-bottom: 8px;">
+            <input type="file" (change)="onCategoryFileSelect($event)" accept="image/*" class="dash-form-input" style="padding: 6px;">
+          </div>
+          <input type="text" id="cat-img" name="imageUrl" [(ngModel)]="categoryForm.imageUrl" class="dash-form-input" placeholder="Or enter Image URL (e.g. https://... or /uploads/...)">
+          @if (categoryForm.imageUrl) {
+            <div style="margin-top: 8px;">
+              <img [src]="categoryForm.imageUrl" alt="Preview" style="max-height: 100px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border-color);">
+            </div>
+          }
+        </div>
+        
+        <div class="modal-card-footer">
+          <button type="button" (click)="showCategoryModal.set(false)" class="dash-btn-secondary-outline">Cancel</button>
+          <button type="submit" (click)="onSubmitCategory()" [disabled]="!catForm.form.valid" class="dash-btn-primary">Save Category</button>
+        </div>
+      </form>
     </div>
-
-    <form (ngSubmit)="onSubmitCategory()" #catForm="ngForm" class="modal-card-body">
-      <div class="dash-form-group">
-        <label class="dash-form-label" for="cat-name">Category Name *</label>
-        <input type="text" id="cat-name" name="name" [(ngModel)]="categoryForm.name" required #catNameInput="ngModel" class="dash-form-input" placeholder="e.g. Organic Spices">
-        <div *ngIf="catNameInput.invalid && catNameInput.touched" class="field-error-msg">Category name is required.</div>
-      </div>
-
-      <div class="dash-form-group">
-        <label class="dash-form-label" for="cat-desc">Description</label>
-        <textarea id="cat-desc" name="description" [(ngModel)]="categoryForm.description" rows="3" class="dash-form-input" placeholder="Brief summary of category products..."></textarea>
-      </div>
-
-      <div class="dash-form-group">
-        <label class="dash-form-label" for="cat-img">Image URL</label>
-        <input type="text" id="cat-img" name="imageUrl" [(ngModel)]="categoryForm.imageUrl" class="dash-form-input" placeholder="https://images.unsplash.com/...">
-      </div>
-      
-      <div class="modal-card-footer">
-        <button type="button" (click)="showCategoryModal.set(false)" class="dash-btn-secondary-outline">Cancel</button>
-        <button type="submit" (click)="onSubmitCategory()" [disabled]="!catForm.form.valid" class="dash-btn-primary">Save Category</button>
-      </div>
-    </form>
   </div>
-</div>
+}
 
 <!-- ========================================== -->
 <!-- MODAL: ADD/EDIT PRODUCT -->
 <!-- ========================================== -->
-<div *ngIf="showProductModal()" class="dash-modal-overlay flex-center fade-in">
-  <div class="dash-modal-card dash-modal-lg slide-up">
-    <div class="modal-card-header">
-      <h3>
-        <i class="fa-solid fa-box-open header-icon"></i> 
-        {{ isEditProduct() ? 'Edit Product Specifications' : 'Add New Export Product' }}
-      </h3>
-      <button (click)="showProductModal.set(false)" class="modal-close-icon" aria-label="Close">&times;</button>
-    </div>
+@if (showProductModal()) {
+  <div class="dash-modal-overlay flex-center fade-in">
+    <div class="dash-modal-card dash-modal-lg slide-up">
+      <div class="modal-card-header">
+        <h3>
+          <i class="fa-solid fa-box-open header-icon"></i> 
+          {{ isEditProduct() ? 'Edit Product Specifications' : 'Add New Export Product' }}
+        </h3>
+        <button (click)="showProductModal.set(false)" class="modal-close-icon" aria-label="Close">&times;</button>
+      </div>
 
-    <form (ngSubmit)="onSubmitProduct()" #prodForm="ngForm" class="modal-card-body">
-      <div class="modal-grid-2">
-        <div class="dash-form-group">
-          <label class="dash-form-label" for="prod-cat">Category *</label>
-          <select id="prod-cat" name="categoryId" [(ngModel)]="productForm.categoryId" required #prodCatInput="ngModel" class="dash-form-input">
-            <option value="">Select Category</option>
-            @for (cat of categories(); track cat._id) {
-              <option [value]="cat._id">{{ cat.name }}</option>
+      <form (ngSubmit)="onSubmitProduct()" #prodForm="ngForm" class="modal-card-body">
+        <div class="modal-grid-2">
+          <div class="dash-form-group">
+            <label class="dash-form-label" for="prod-cat">Category *</label>
+            <select id="prod-cat" name="categoryId" [(ngModel)]="productForm.categoryId" required #prodCatInput="ngModel" class="dash-form-input">
+              <option value="">Select Category</option>
+              @for (cat of categories(); track cat._id) {
+                <option [value]="cat._id">{{ cat.name }}</option>
+              }
+            </select>
+            @if (prodCatInput.invalid && prodCatInput.touched) {
+              <div class="field-error-msg">Category is required.</div>
             }
-          </select>
-          <div *ngIf="prodCatInput.invalid && prodCatInput.touched" class="field-error-msg">Category is required.</div>
+          </div>
+
+          <div class="dash-form-group">
+            <label class="dash-form-label" for="prod-name">Product Name *</label>
+            <input type="text" id="prod-name" name="name" [(ngModel)]="productForm.name" required #prodNameInput="ngModel" class="dash-form-input" placeholder="e.g. Premium Basmati Rice">
+            @if (prodNameInput.invalid && prodNameInput.touched) {
+              <div class="field-error-msg">Product name is required.</div>
+            }
+          </div>
         </div>
 
         <div class="dash-form-group">
-          <label class="dash-form-label" for="prod-name">Product Name *</label>
-          <input type="text" id="prod-name" name="name" [(ngModel)]="productForm.name" required #prodNameInput="ngModel" class="dash-form-input" placeholder="e.g. Premium Basmati Rice">
-          <div *ngIf="prodNameInput.invalid && prodNameInput.touched" class="field-error-msg">Product name is required.</div>
+          <label class="dash-form-label" for="prod-desc">Description *</label>
+          <textarea id="prod-desc" name="description" [(ngModel)]="productForm.description" required #prodDescInput="ngModel" rows="3" class="dash-form-input" placeholder="Detailed product specifications and export highlights..."></textarea>
+          @if (prodDescInput.invalid && prodDescInput.touched) {
+            <div class="field-error-msg">Description is required.</div>
+          }
         </div>
-      </div>
 
-      <div class="dash-form-group">
-        <label class="dash-form-label" for="prod-desc">Description *</label>
-        <textarea id="prod-desc" name="description" [(ngModel)]="productForm.description" required #prodDescInput="ngModel" rows="3" class="dash-form-input" placeholder="Detailed product specifications and export highlights..."></textarea>
-        <div *ngIf="prodDescInput.invalid && prodDescInput.touched" class="field-error-msg">Description is required.</div>
-      </div>
+        <div class="modal-grid-2">
+          <div class="dash-form-group">
+            <label class="dash-form-label" for="prod-origin">Origin Location</label>
+            <input type="text" id="prod-origin" name="origin" [(ngModel)]="productForm.origin" class="dash-form-input" placeholder="e.g. Gujarat, India">
+          </div>
+          <div class="dash-form-group">
+            <label class="dash-form-label" for="prod-moq">Minimum Order Quantity (MOQ)</label>
+            <input type="text" id="prod-moq" name="moq" [(ngModel)]="productForm.moq" class="dash-form-input" placeholder="e.g. 20 Metric Tons">
+          </div>
+        </div>
 
-      <div class="modal-grid-2">
+        <div class="modal-grid-2">
+          <div class="dash-form-group">
+            <label class="dash-form-label" for="prod-pkg">Packaging Details</label>
+            <input type="text" id="prod-pkg" name="packagingInfo" [(ngModel)]="productForm.packagingInfo" class="dash-form-input" placeholder="e.g. 25kg PP bags / Jute bags">
+          </div>
+          <div class="dash-form-group">
+            <label class="dash-form-label" for="prod-avail">Export Availability</label>
+            <input type="text" id="prod-avail" name="exportAvailability" [(ngModel)]="productForm.exportAvailability" class="dash-form-input" placeholder="e.g. Year-round / Harvest Season">
+          </div>
+        </div>
+
+        <!-- Primary Cover Image -->
         <div class="dash-form-group">
-          <label class="dash-form-label" for="prod-origin">Origin Location</label>
-          <input type="text" id="prod-origin" name="origin" [(ngModel)]="productForm.origin" class="dash-form-input" placeholder="e.g. Gujarat, India">
-        </div>
-        <div class="dash-form-group">
-          <label class="dash-form-label" for="prod-moq">Minimum Order Quantity (MOQ)</label>
-          <input type="text" id="prod-moq" name="moq" [(ngModel)]="productForm.moq" class="dash-form-input" placeholder="e.g. 20 Metric Tons">
-        </div>
-      </div>
-
-      <div class="modal-grid-2">
-        <div class="dash-form-group">
-          <label class="dash-form-label" for="prod-pkg">Packaging Details</label>
-          <input type="text" id="prod-pkg" name="packagingInfo" [(ngModel)]="productForm.packagingInfo" class="dash-form-input" placeholder="e.g. 25kg PP bags / Jute bags">
-        </div>
-        <div class="dash-form-group">
-          <label class="dash-form-label" for="prod-avail">Export Availability</label>
-          <input type="text" id="prod-avail" name="exportAvailability" [(ngModel)]="productForm.exportAvailability" class="dash-form-input" placeholder="e.g. Year-round / Harvest Season">
-        </div>
-      </div>
-
-      <!-- Primary Cover Image -->
-      <div class="dash-form-group">
-        <label class="dash-form-label" for="prod-image">Cover Image URL *</label>
-        <input type="text" id="prod-image" name="image0" [(ngModel)]="productForm.images[0]" required #prodImgInput="ngModel" class="dash-form-input" placeholder="Primary product image URL">
-        <div *ngIf="prodImgInput.invalid && prodImgInput.touched" class="field-error-msg">Cover image URL is required.</div>
-      </div>
-
-      <!-- Technical Specifications Section -->
-      <div class="spec-builder-block">
-        <label class="dash-form-label">Technical Specification Parameters</label>
-        <p class="field-help-text">Define quality parameters like Moisture, Purity, Admixture, Grain Length, etc.</p>
-
-        <div class="spec-rows-container">
-          @for (spec of productForm.specifications; track $index; let idx = $index) {
-            <div class="spec-input-row">
-              <input type="text" name="specKey{{idx}}" [(ngModel)]="spec.key" placeholder="Parameter (e.g. Moisture)" class="dash-form-input">
-              <input type="text" name="specVal{{idx}}" [(ngModel)]="spec.value" placeholder="Value (e.g. Max 12%)" class="dash-form-input">
-              <button type="button" (click)="removeFormSpec(idx)" class="spec-remove-btn" title="Remove parameter">
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
+          <label class="dash-form-label" for="prod-image">Product Cover Image *</label>
+          <div class="flex" style="gap: 12px; align-items: center; margin-bottom: 8px;">
+            <input type="file" (change)="onProductCoverFileSelect($event)" accept="image/*" class="dash-form-input" style="padding: 6px;">
+          </div>
+          <input type="text" id="prod-image" name="image0" [(ngModel)]="productForm.images[0]" required #prodImgInput="ngModel" class="dash-form-input" placeholder="Or enter Image URL (e.g. https://... or /uploads/...)">
+          @if (prodImgInput.invalid && prodImgInput.touched) {
+            <div class="field-error-msg">Cover image path is required.</div>
+          }
+          @if (productForm.images[0]) {
+            <div style="margin-top: 8px;">
+              <img [src]="productForm.images[0]" alt="Preview" style="max-height: 120px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border-color);">
             </div>
           }
         </div>
-        <button type="button" (click)="addFormSpec()" class="dash-btn-secondary-outline btn-sm">
-          <i class="fa-solid fa-plus"></i> Add Specification Row
-        </button>
-      </div>
 
-      <div class="modal-card-footer">
-        <button type="button" (click)="showProductModal.set(false)" class="dash-btn-secondary-outline">Cancel</button>
-        <button type="submit" (click)="onSubmitProduct()" [disabled]="!prodForm.form.valid" class="dash-btn-primary">Save Product</button>
-      </div>
-    </form>
+        <!-- Technical Specifications Section -->
+        <div class="spec-builder-block">
+          <label class="dash-form-label">Technical Specification Parameters</label>
+          <p class="field-help-text">Define quality parameters like Moisture, Purity, Admixture, Grain Length, etc.</p>
+
+          <div class="spec-rows-container">
+            @for (spec of productForm.specifications; track $index; let idx = $index) {
+              <div class="spec-input-row">
+                <input type="text" name="specKey{{idx}}" [(ngModel)]="spec.key" placeholder="Parameter (e.g. Moisture)" class="dash-form-input">
+                <input type="text" name="specVal{{idx}}" [(ngModel)]="spec.value" placeholder="Value (e.g. Max 12%)" class="dash-form-input">
+                <button type="button" (click)="removeFormSpec(idx)" class="spec-remove-btn" title="Remove parameter">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            }
+          </div>
+          <button type="button" (click)="addFormSpec()" class="dash-btn-secondary-outline btn-sm">
+            <i class="fa-solid fa-plus"></i> Add Specification Row
+          </button>
+        </div>
+
+        <div class="modal-card-footer">
+          <button type="button" (click)="showProductModal.set(false)" class="dash-btn-secondary-outline">Cancel</button>
+          <button type="submit" (click)="onSubmitProduct()" [disabled]="!prodForm.form.valid" class="dash-btn-primary">Save Product</button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
+}
 
 <!-- ========================================== -->
 <!-- MODAL: ADD/EDIT BLOG -->
 <!-- ========================================== -->
-<div *ngIf="showBlogModal()" class="dash-modal-overlay flex-center fade-in">
-  <div class="dash-modal-card dash-modal-lg slide-up">
-    <div class="modal-card-header">
-      <h3>
-        <i class="fa-solid fa-newspaper header-icon"></i> 
-        {{ isEditBlog() ? 'Edit News Article' : 'Publish New Article' }}
-      </h3>
-      <button (click)="showBlogModal.set(false)" class="modal-close-icon" aria-label="Close">&times;</button>
+@if (showBlogModal()) {
+  <div class="dash-modal-overlay flex-center fade-in">
+    <div class="dash-modal-card dash-modal-lg slide-up">
+      <div class="modal-card-header">
+        <h3>
+          <i class="fa-solid fa-newspaper header-icon"></i> 
+          {{ isEditBlog() ? 'Edit News Article' : 'Publish New Article' }}
+        </h3>
+        <button (click)="showBlogModal.set(false)" class="modal-close-icon" aria-label="Close">&times;</button>
+      </div>
+
+      <form (ngSubmit)="onSubmitBlog()" #blogFormRef="ngForm" class="modal-card-body">
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="blog-title">Article Title *</label>
+          <input type="text" id="blog-title" name="title" [(ngModel)]="blogForm.title" required #blogTitleInput="ngModel" class="dash-form-input" placeholder="e.g. Ocean Freight Rate Trends for Q3 2026">
+          @if (blogTitleInput.invalid && blogTitleInput.touched) {
+            <div class="field-error-msg">Title is required.</div>
+          }
+        </div>
+
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="blog-summary">Short Summary *</label>
+          <textarea id="blog-summary" name="summary" [(ngModel)]="blogForm.summary" required #blogSumInput="ngModel" rows="2" class="dash-form-input" placeholder="Brief abstract summarizing key article insights..."></textarea>
+          @if (blogSumInput.invalid && blogSumInput.touched) {
+            <div class="field-error-msg">Summary is required.</div>
+          }
+        </div>
+
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="blog-content">Full Body Content *</label>
+          <textarea id="blog-content" name="content" [(ngModel)]="blogForm.content" required #blogContentInput="ngModel" rows="5" class="dash-form-input" placeholder="Detailed post content and report paragraphs..."></textarea>
+          @if (blogContentInput.invalid && blogContentInput.touched) {
+            <div class="field-error-msg">Content is required.</div>
+          }
+        </div>
+
+        <div class="modal-grid-2">
+          <div class="dash-form-group">
+            <label class="dash-form-label" for="blog-img">Featured Image URL</label>
+            <input type="text" id="blog-img" name="featuredImage" [(ngModel)]="blogForm.featuredImage" class="dash-form-input" placeholder="https://images.unsplash.com/...">
+          </div>
+          <div class="dash-form-group">
+            <label class="dash-form-label" for="blog-slug">URL Slug (Optional)</label>
+            <input type="text" id="blog-slug" name="slug" [(ngModel)]="blogForm.slug" class="dash-form-input" placeholder="e.g. ocean-freight-trends-q3">
+          </div>
+        </div>
+
+        <div class="modal-card-footer">
+          <button type="button" (click)="showBlogModal.set(false)" class="dash-btn-secondary-outline">Cancel</button>
+          <button type="submit" (click)="onSubmitBlog()" [disabled]="!blogFormRef.form.valid" class="dash-btn-primary">Save Article</button>
+        </div>
+      </form>
     </div>
-
-    <form (ngSubmit)="onSubmitBlog()" #blogFormRef="ngForm" class="modal-card-body">
-      <div class="dash-form-group">
-        <label class="dash-form-label" for="blog-title">Article Title *</label>
-        <input type="text" id="blog-title" name="title" [(ngModel)]="blogForm.title" required #blogTitleInput="ngModel" class="dash-form-input" placeholder="e.g. Ocean Freight Rate Trends for Q3 2026">
-        <div *ngIf="blogTitleInput.invalid && blogTitleInput.touched" class="field-error-msg">Title is required.</div>
-      </div>
-
-      <div class="dash-form-group">
-        <label class="dash-form-label" for="blog-summary">Short Summary *</label>
-        <textarea id="blog-summary" name="summary" [(ngModel)]="blogForm.summary" required #blogSumInput="ngModel" rows="2" class="dash-form-input" placeholder="Brief abstract summarizing key article insights..."></textarea>
-        <div *ngIf="blogSumInput.invalid && blogSumInput.touched" class="field-error-msg">Summary is required.</div>
-      </div>
-
-      <div class="dash-form-group">
-        <label class="dash-form-label" for="blog-content">Full Body Content *</label>
-        <textarea id="blog-content" name="content" [(ngModel)]="blogForm.content" required #blogContentInput="ngModel" rows="5" class="dash-form-input" placeholder="Detailed post content and report paragraphs..."></textarea>
-        <div *ngIf="blogContentInput.invalid && blogContentInput.touched" class="field-error-msg">Content is required.</div>
-      </div>
-
-      <div class="modal-grid-2">
-        <div class="dash-form-group">
-          <label class="dash-form-label" for="blog-img">Featured Image URL</label>
-          <input type="text" id="blog-img" name="featuredImage" [(ngModel)]="blogForm.featuredImage" class="dash-form-input" placeholder="https://images.unsplash.com/...">
-        </div>
-        <div class="dash-form-group">
-          <label class="dash-form-label" for="blog-slug">URL Slug (Optional)</label>
-          <input type="text" id="blog-slug" name="slug" [(ngModel)]="blogForm.slug" class="dash-form-input" placeholder="e.g. ocean-freight-trends-q3">
-        </div>
-      </div>
-
-      <div class="modal-card-footer">
-        <button type="button" (click)="showBlogModal.set(false)" class="dash-btn-secondary-outline">Cancel</button>
-        <button type="submit" (click)="onSubmitBlog()" [disabled]="!blogFormRef.form.valid" class="dash-btn-primary">Save Article</button>
-      </div>
-    </form>
   </div>
-</div>
+}
 
 <!-- ========================================== -->
 <!-- MODAL: ADD GALLERY ITEM -->
 <!-- ========================================== -->
-<div *ngIf="showGalleryModal()" class="dash-modal-overlay flex-center fade-in">
-  <div class="dash-modal-card slide-up">
-    <div class="modal-card-header">
-      <h3>
-        <i class="fa-solid fa-images header-icon"></i> Upload Operations Photo
-      </h3>
-      <button (click)="showGalleryModal.set(false)" class="modal-close-icon" aria-label="Close">&times;</button>
+@if (showGalleryModal()) {
+  <div class="dash-modal-overlay flex-center fade-in">
+    <div class="dash-modal-card slide-up">
+      <div class="modal-card-header">
+        <h3>
+          <i class="fa-solid fa-images header-icon"></i> Upload Operations Photo
+        </h3>
+        <button (click)="showGalleryModal.set(false)" class="modal-close-icon" aria-label="Close">&times;</button>
+      </div>
+
+      <form (ngSubmit)="onSubmitGallery()" #galFormRef="ngForm" class="modal-card-body">
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="gal-title">Photo Title / Caption</label>
+          <input type="text" id="gal-title" name="title" [(ngModel)]="galleryForm.title" class="dash-form-input" placeholder="e.g. Optical Color Sorting Facility">
+        </div>
+
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="gal-cat">Category Tag *</label>
+          <select id="gal-cat" name="category" [(ngModel)]="galleryForm.category" required class="dash-form-input">
+            <option value="Products">Products</option>
+            <option value="Packaging">Packaging</option>
+            <option value="Production">Production</option>
+            <option value="Logistics">Logistics</option>
+            <option value="Team">Team</option>
+          </select>
+        </div>
+
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="gal-img">Image URL *</label>
+          <input type="text" id="gal-img" name="imageUrl" [(ngModel)]="galleryForm.imageUrl" required #galImgInput="ngModel" class="dash-form-input" placeholder="https://images.unsplash.com/...">
+          @if (galImgInput.invalid && galImgInput.touched) {
+            <div class="field-error-msg">Image URL is required.</div>
+          }
+        </div>
+
+        <div class="modal-card-footer">
+          <button type="button" (click)="showGalleryModal.set(false)" class="dash-btn-secondary-outline">Cancel</button>
+          <button type="submit" (click)="onSubmitGallery()" [disabled]="!galFormRef.form.valid" class="dash-btn-primary">Save Photo</button>
+        </div>
+      </form>
     </div>
-
-    <form (ngSubmit)="onSubmitGallery()" #galFormRef="ngForm" class="modal-card-body">
-      <div class="dash-form-group">
-        <label class="dash-form-label" for="gal-title">Photo Title / Caption</label>
-        <input type="text" id="gal-title" name="title" [(ngModel)]="galleryForm.title" class="dash-form-input" placeholder="e.g. Optical Color Sorting Facility">
-      </div>
-
-      <div class="dash-form-group">
-        <label class="dash-form-label" for="gal-cat">Category Tag *</label>
-        <select id="gal-cat" name="category" [(ngModel)]="galleryForm.category" required class="dash-form-input">
-          <option value="Products">Products</option>
-          <option value="Packaging">Packaging</option>
-          <option value="Production">Production</option>
-          <option value="Logistics">Logistics</option>
-          <option value="Team">Team</option>
-        </select>
-      </div>
-
-      <div class="dash-form-group">
-        <label class="dash-form-label" for="gal-img">Image URL *</label>
-        <input type="text" id="gal-img" name="imageUrl" [(ngModel)]="galleryForm.imageUrl" required #galImgInput="ngModel" class="dash-form-input" placeholder="https://images.unsplash.com/...">
-        <div *ngIf="galImgInput.invalid && galImgInput.touched" class="field-error-msg">Image URL is required.</div>
-      </div>
-
-      <div class="modal-card-footer">
-        <button type="button" (click)="showGalleryModal.set(false)" class="dash-btn-secondary-outline">Cancel</button>
-        <button type="submit" (click)="onSubmitGallery()" [disabled]="!galFormRef.form.valid" class="dash-btn-primary">Save Photo</button>
-      </div>
-    </form>
   </div>
-</div>
+}
 
 <!-- ========================================== -->
 <!-- MODAL: ADD/EDIT CERTIFICATION -->
 <!-- ========================================== -->
-<div *ngIf="showCertModal()" class="dash-modal-overlay flex-center fade-in">
-  <div class="dash-modal-card slide-up">
-    <div class="modal-card-header">
-      <h3>
-        <i class="fa-solid fa-award header-icon"></i> 
-        {{ isEditCert() ? 'Edit Certification' : 'Add Certification / License' }}
-      </h3>
-      <button (click)="showCertModal.set(false)" class="modal-close-icon" aria-label="Close">&times;</button>
+@if (showCertModal()) {
+  <div class="dash-modal-overlay flex-center fade-in">
+    <div class="dash-modal-card slide-up">
+      <div class="modal-card-header">
+        <h3>
+          <i class="fa-solid fa-award header-icon"></i> 
+          {{ isEditCert() ? 'Edit Certification' : 'Add Certification / License' }}
+        </h3>
+        <button (click)="showCertModal.set(false)" class="modal-close-icon" aria-label="Close">&times;</button>
+      </div>
+
+      <form (ngSubmit)="onSubmitCert()" #certFormRef="ngForm" class="modal-card-body">
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="cert-title">Certificate Title *</label>
+          <input type="text" id="cert-title" name="title" [(ngModel)]="certForm.title" required #certTitleInput="ngModel" class="dash-form-input" placeholder="e.g. APEDA Export Registration License">
+          @if (certTitleInput.invalid && certTitleInput.touched) {
+            <div class="field-error-msg">Title is required.</div>
+          }
+        </div>
+
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="cert-desc">Description</label>
+          <textarea id="cert-desc" name="description" [(ngModel)]="certForm.description" rows="3" class="dash-form-input" placeholder="Details regarding license compliance and quality scope..."></textarea>
+        </div>
+
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="cert-pdf">PDF Document / Image Link</label>
+          <input type="text" id="cert-pdf" name="pdfUrl" [(ngModel)]="certForm.pdfUrl" class="dash-form-input" placeholder="https://...">
+        </div>
+
+        <div class="modal-card-footer">
+          <button type="button" (click)="showCertModal.set(false)" class="dash-btn-secondary-outline">Cancel</button>
+          <button type="submit" (click)="onSubmitCert()" [disabled]="!certFormRef.form.valid" class="dash-btn-primary">Save Certification</button>
+        </div>
+      </form>
     </div>
-
-    <form (ngSubmit)="onSubmitCert()" #certFormRef="ngForm" class="modal-card-body">
-      <div class="dash-form-group">
-        <label class="dash-form-label" for="cert-title">Certificate Title *</label>
-        <input type="text" id="cert-title" name="title" [(ngModel)]="certForm.title" required #certTitleInput="ngModel" class="dash-form-input" placeholder="e.g. APEDA Export Registration License">
-        <div *ngIf="certTitleInput.invalid && certTitleInput.touched" class="field-error-msg">Title is required.</div>
-      </div>
-
-      <div class="dash-form-group">
-        <label class="dash-form-label" for="cert-desc">Description</label>
-        <textarea id="cert-desc" name="description" [(ngModel)]="certForm.description" rows="3" class="dash-form-input" placeholder="Details regarding license compliance and quality scope..."></textarea>
-      </div>
-
-      <div class="dash-form-group">
-        <label class="dash-form-label" for="cert-pdf">PDF Document / Image Link</label>
-        <input type="text" id="cert-pdf" name="pdfUrl" [(ngModel)]="certForm.pdfUrl" class="dash-form-input" placeholder="https://...">
-      </div>
-
-      <div class="modal-card-footer">
-        <button type="button" (click)="showCertModal.set(false)" class="dash-btn-secondary-outline">Cancel</button>
-        <button type="submit" (click)="onSubmitCert()" [disabled]="!certFormRef.form.valid" class="dash-btn-primary">Save Certification</button>
-      </div>
-    </form>
   </div>
-</div>
+}
+
+<!-- ========================================== -->
+<!-- MODAL: ADD/EDIT IMAGE MASTER ENTRY -->
+<!-- ========================================== -->
+@if (showImageModal()) {
+  <div class="dash-modal-overlay flex-center fade-in">
+    <div class="dash-modal-card slide-up">
+      <div class="modal-card-header">
+        <h3>
+          <i class="fa-solid fa-images header-icon"></i> 
+          {{ isEditImage() ? 'Edit Image Entry' : 'Add Image Entry' }}
+        </h3>
+        <button (click)="showImageModal.set(false)" class="modal-close-icon" aria-label="Close">&times;</button>
+      </div>
+
+      <form (ngSubmit)="onSubmitImage()" #imgFormRef="ngForm" class="modal-card-body">
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="img-key">Key Name *</label>
+          <input type="text" id="img-key" name="key" [(ngModel)]="imageForm.key" required #imgKeyInput="ngModel" class="dash-form-input" placeholder="e.g. hero_about_bg, owner_profile_photo, facility_processing">
+          @if (imgKeyInput.invalid && imgKeyInput.touched) {
+            <div class="field-error-msg">Key Name is required.</div>
+          }
+        </div>
+
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="img-url">Image File / URL *</label>
+          <div class="flex" style="gap: 12px; align-items: center; margin-bottom: 8px;">
+            <input type="file" (change)="onImageMasterFileSelect($event)" accept="image/*" class="dash-form-input" style="padding: 6px;">
+          </div>
+          <input type="text" id="img-url" name="imageUrl" [(ngModel)]="imageForm.imageUrl" required #imgUrlInput="ngModel" class="dash-form-input" placeholder="Or enter Image URL (e.g. https://... or /uploads/...)">
+          @if (imgUrlInput.invalid && imgUrlInput.touched) {
+            <div class="field-error-msg">Image file path is required.</div>
+          }
+        </div>
+
+        <div class="dash-form-group">
+          <label class="dash-form-label" for="img-desc">Description / Purpose</label>
+          <input type="text" id="img-desc" name="description" [(ngModel)]="imageForm.description" class="dash-form-input" placeholder="e.g. Home page about section image">
+        </div>
+
+        @if (imageForm.imageUrl) {
+          <div class="dash-form-group" style="margin-top: 12px;">
+            <label class="dash-form-label">Image Preview:</label>
+            <img [src]="imageForm.imageUrl" alt="Preview" style="max-width: 100%; max-height: 180px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color);">
+          </div>
+        }
+
+        <div class="modal-card-footer">
+          <button type="button" (click)="showImageModal.set(false)" class="dash-btn-secondary-outline">Cancel</button>
+          <button type="submit" [disabled]="!imgFormRef.form.valid" class="dash-btn-primary">Save Image Entry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
 

@@ -90,25 +90,31 @@ router.put('/:id', protect, async (req, res) => {
   const { title, summary, content, featuredImage, slug } = req.body;
 
   try {
-    const blog = await Blog.findById(req.params.id);
-    if (!blog) {
+    const updateData = {};
+
+    if (title) {
+      updateData.title = title;
+      if (!slug) updateData.slug = slugify(title);
+    }
+    if (slug) updateData.slug = slug;
+    if (summary !== undefined) updateData.summary = summary;
+    if (content !== undefined) updateData.content = content;
+    if (featuredImage !== undefined) updateData.featuredImage = featuredImage;
+
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedBlog) {
       return res.status(404).json({ status: 'error', message: 'Blog article not found' });
     }
 
-    if (title) {
-      blog.title = title;
-      if (!slug) blog.slug = slugify(title);
-    }
-    if (slug) blog.slug = slug;
-    if (summary !== undefined) blog.summary = summary;
-    if (content !== undefined) blog.content = content;
-    if (featuredImage !== undefined) blog.featuredImage = featuredImage;
-
-    const updatedBlog = await blog.save();
     return res.json({ status: 'success', data: updatedBlog });
   } catch (error) {
     console.error('Update blog error:', error.message);
-    return res.status(500).json({ status: 'error', message: 'Server error' });
+    return res.status(500).json({ status: 'error', message: error.message || 'Server error' });
   }
 });
 

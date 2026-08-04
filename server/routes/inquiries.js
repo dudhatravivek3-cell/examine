@@ -65,6 +65,22 @@ router.post('/', async (req, res) => {
   }
 });
 
+// @desc    Get inquiries submitted by logged in user
+// @route   GET /api/inquiries/my-inquiries
+// @access  Private
+router.get('/my-inquiries', protect, async (req, res) => {
+  try {
+    const userEmail = req.user?.email;
+    if (!userEmail) {
+      return res.status(400).json({ status: 'error', message: 'User email not found' });
+    }
+    const inquiries = await Inquiry.find({ email: userEmail.toLowerCase() }).sort({ createdAt: -1 });
+    return res.json({ status: 'success', data: inquiries });
+  } catch (error) {
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
 // @desc    Get all contact inquiries
 // @route   GET /api/inquiries
 // @access  Private (Admin only)
@@ -90,10 +106,10 @@ router.get('/', protect, async (req, res) => {
 router.put('/:id', protect, async (req, res) => {
   const { status } = req.body;
 
-  if (!status || !['new', 'read', 'replied'].includes(status)) {
+  if (!status || !['new', 'read', 'replied', 'in-progress', 'completed', 'archived'].includes(status)) {
     return res.status(400).json({ 
       status: 'error', 
-      message: 'Please provide a valid status: new, read, or replied' 
+      message: 'Please provide a valid status' 
     });
   }
 

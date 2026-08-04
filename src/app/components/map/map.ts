@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ElementRef, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ElementRef, ViewChild, inject, NgZone, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 
@@ -7,12 +7,14 @@ import { ApiService } from '../../services/api.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './map.html',
-  styleUrl: './map.css'
+  styleUrl: './map.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef;
   private map!: any;
   private apiService = inject(ApiService);
+  private ngZone = inject(NgZone);
 
   // Standard latitude and longitude mappings for common export destinations
   private countryCoords: { [key: string]: [number, number] } = {
@@ -39,11 +41,13 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {}
 
   async ngAfterViewInit() {
-    // SSR Safe dynamic loading of Leaflet
+    // SSR Safe dynamic loading of Leaflet outside Angular zone
     if (typeof window !== 'undefined') {
       try {
         const L = await import('leaflet');
-        this.initMap(L);
+        this.ngZone.runOutsideAngular(() => {
+          this.initMap(L);
+        });
       } catch (error) {
         console.error('Leaflet initialization failed:', error);
       }

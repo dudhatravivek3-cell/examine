@@ -15,7 +15,7 @@
       <div class="sidebar-block card">
         <h4 class="sidebar-title">Search Products</h4>
         <form (submit)="onSearch()" class="search-form flex">
-          <input type="text" [(ngModel)]="searchQuery" name="search" placeholder="Type keyword..." class="form-control">
+          <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" name="search" placeholder="Type keyword..." class="form-control">
           <button type="submit" class="btn btn-secondary search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
         </form>
       </div>
@@ -79,9 +79,9 @@
           <div class="pagination flex-center" style="margin-top: 48px; gap: 8px;">
             <button (click)="changePage(currentPage() - 1)" [disabled]="currentPage() === 1" class="page-btn">&larr;</button>
             
-            @for (page of [].constructor(totalPages()); track $index; let idx = $index) {
-              <button (click)="changePage(idx + 1)" [class.active]="currentPage() === (idx + 1)" class="page-btn">
-                {{ idx + 1 }}
+            @for (page of pagesArray(); track page) {
+              <button (click)="changePage(page)" [class.active]="currentPage() === page" class="page-btn">
+                {{ page }}
               </button>
             }
 

@@ -1,13 +1,38 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-footer',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, CommonModule],
   templateUrl: './footer.html',
-  styleUrl: './footer.css'
+  styleUrl: './footer.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FooterComponent {
+export class FooterComponent implements OnInit {
   currentYear = new Date().getFullYear();
+  company = signal<any>(null);
+  categories = signal<any[]>([]);
+  private apiService = inject(ApiService);
+
+  ngOnInit() {
+    this.apiService.getCompanyDetails().subscribe({
+      next: (res) => {
+        if (res.status === 'success' && res.data) {
+          this.company.set(res.data);
+        }
+      }
+    });
+
+    this.apiService.getCategories().subscribe({
+      next: (res) => {
+        if (res.status === 'success' && res.data) {
+          this.categories.set(res.data);
+        }
+      }
+    });
+  }
 }
+

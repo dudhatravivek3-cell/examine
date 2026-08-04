@@ -47,9 +47,11 @@
 </section>
 
 <!-- Lightbox Modal popup -->
-<div *ngIf="showLightbox()" class="lightbox-overlay flex-center fade-in" (click)="closeLightbox()">
-  <button class="lightbox-close-btn" (click)="closeLightbox()">&times;</button>
-  <div class="lightbox-img-wrapper" (click)="$event.stopPropagation()">
-    <img [src]="lightboxImage()" alt="Zoomed Operation View" class="lightbox-img">
+@if (showLightbox()) {
+  <div class="lightbox-overlay flex-center fade-in" (click)="closeLightbox()">
+    <button class="lightbox-close-btn" (click)="closeLightbox()">&times;</button>
+    <div class="lightbox-img-wrapper" (click)="$event.stopPropagation()">
+      <img [src]="lightboxImage()" alt="Zoomed Operation View" class="lightbox-img">
+    </div>
   </div>
-</div>
+}

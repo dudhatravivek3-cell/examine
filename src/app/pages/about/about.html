@@ -45,20 +45,20 @@
 <section class="director-section" style="background-color: var(--bg-color); padding: 80px 0;">
   <div class="container grid grid-2" style="align-items: center;">
     <div class="director-img-wrapper" style="border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-md); max-width: 400px; margin: 0 auto;">
-      <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80" alt="Director Vivek Dudhatra" style="width: 100%; height: 400px; object-fit: cover;">
+      <img [src]="imagesMap()['owner_profile_photo'] || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80'" [alt]="company()?.ownerName || 'Director'" style="width: 100%; height: 400px; object-fit: cover;">
     </div>
     <div class="director-content flex-column" style="gap: 20px;">
       <span class="section-subtitle">LEADERSHIP MESSAGE</span>
       <h2 class="section-title text-left">From the Director's Desk</h2>
       <p style="font-style: italic; font-size: 1.15rem; color: var(--primary-color); font-weight: 500;">
-        "Examine Export Services was founded to bring reliability to the unorganized import-export market. We build long-term associations, not just one-off transactions."
+        "{{ company()?.ownerQuote }}"
       </p>
       <p style="color: var(--text-muted); font-size: 0.95rem;">
         Indian agricultural produce is highly appreciated globally, yet buyers often face challenges related to specifications variations and packaging issues. Our core value is absolute transparency. We provide real-time updates and strict pre-shipment inspections so that you receive exactly what you ordered.
       </p>
       <div>
-        <h4 style="color: var(--primary-color); margin-bottom: 2px;">Vivek Dudhatra</h4>
-        <p style="color: var(--secondary-color); font-weight: 700; font-size: 0.85rem; letter-spacing: 1px;">DIRECTOR, EXAMINE EXPORTS</p>
+        <h4 style="color: var(--primary-color); margin-bottom: 2px;">{{ company()?.ownerName }}</h4>
+        <p style="color: var(--secondary-color); font-weight: 700; font-size: 0.85rem; letter-spacing: 1px;">{{ company()?.ownerTitle }}</p>
       </div>
     </div>
   </div>

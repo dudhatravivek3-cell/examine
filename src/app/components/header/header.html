@@ -1,28 +1,84 @@
 <header [class.scrolled]="isScrolled()" class="main-header glass animate-fadeIn">
   <div class="container flex-between">
     <!-- Logo -->
-    <a routerLink="/" class="logo flex" (click)="closeMenu()">
+    <a routerLink="/" class="logo flex notranslate" translate="no" (click)="closeMenu()">
       <i class="fa-solid fa-globe logo-globe" style="color: var(--secondary-color);"></i>
-      <div class="logo-text">
-        <span class="brand-name">Examine</span>
-        <span class="brand-sub">EXPORT SERVICES</span>
+      <div class="logo-text notranslate" translate="no">
+        <span class="brand-name notranslate" translate="no">{{ company()?.companyName || 'Examine' }}</span>
+        <span class="brand-sub notranslate" translate="no">{{ company()?.subtitle || 'EXPORT SERVICES' }}</span>
       </div>
     </a>
 
-    <!-- Desktop Navigation Links -->
-    <nav class="nav-desktop">
-      <ul class="nav-list flex">
-        <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a></li>
-        <li><a routerLink="/about" routerLinkActive="active">About Us</a></li>
-        <li><a routerLink="/products" routerLinkActive="active">Products</a></li>
-        <li><a routerLink="/infrastructure" routerLinkActive="active">Infrastructure</a></li>
-        <li><a routerLink="/certifications" routerLinkActive="active">Certifications</a></li>
-        <li><a routerLink="/gallery" routerLinkActive="active">Gallery</a></li>
-        <li><a routerLink="/blog" routerLinkActive="active">Blog</a></li>
-        <li><a routerLink="/contact" routerLinkActive="active">Contact</a></li>
-        <li><a routerLink="/admin/dashboard" routerLinkActive="active" class="admin-badge">Admin</a></li>
-      </ul>
-    </nav>
+    <!-- Desktop Navigation Links & Language Dropdown -->
+    <div class="header-right flex">
+      <nav class="nav-desktop">
+        <ul class="nav-list flex">
+          <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a></li>
+          <li><a routerLink="/about" routerLinkActive="active">About Us</a></li>
+          <li><a routerLink="/products" routerLinkActive="active">Products</a></li>
+          <li><a routerLink="/infrastructure" routerLinkActive="active">Infrastructure</a></li>
+          <li><a routerLink="/certifications" routerLinkActive="active">Certifications</a></li>
+          <li><a routerLink="/gallery" routerLinkActive="active">Gallery</a></li>
+          <li><a routerLink="/blog" routerLinkActive="active">Blog</a></li>
+          <li><a routerLink="/contact" routerLinkActive="active">Contact</a></li>
+          @if (!authService.currentUser()) {
+            <li><a routerLink="/login" routerLinkActive="active" class="nav-btn nav-btn-primary">Login</a></li>
+          } @else {
+            <li>
+              <a routerLink="/profile" routerLinkActive="active" class="nav-btn nav-btn-outline">
+                <i class="fa-solid fa-user"></i> My Profile
+              </a>
+            </li>
+            @if (authService.isAdmin()) {
+              <li>
+                <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-btn nav-btn-admin">
+                  <i class="fa-solid fa-shield-halved"></i> Dashboard
+                </a>
+              </li>
+            }
+          }
+        </ul>
+      </nav>
+
+      <!-- Custom Desktop Language Dropdown -->
+      <div class="lang-selector-container nav-desktop-lang notranslate" translate="no">
+        <button 
+          type="button" 
+          class="lang-selector-btn notranslate" 
+          translate="no"
+          (click)="toggleLangMenu($event)"
+          aria-label="Select Language"
+          [class.active]="isLangOpen()"
+        >
+          <i class="fa-solid fa-globe lang-icon"></i>
+          <span class="lang-code-badge notranslate" translate="no">{{ currentLanguageObj().badge }}</span>
+          <span class="lang-current-name notranslate" translate="no">{{ currentLanguageObj().name }}</span>
+          <i class="fa-solid fa-chevron-down lang-chevron" [class.open]="isLangOpen()"></i>
+        </button>
+
+        @if (isLangOpen()) {
+          <div class="lang-dropdown-menu glass notranslate" translate="no" (click)="$event.stopPropagation()">
+            <div class="dropdown-header notranslate" translate="no">Select Language</div>
+            <ul class="lang-menu-list notranslate" translate="no">
+              @for (lang of translationService.languages; track lang.code) {
+                <li 
+                  class="lang-menu-item notranslate"
+                  translate="no"
+                  [class.selected]="lang.code === translationService.currentLang()"
+                  (click)="selectLanguage(lang.code, $event)"
+                >
+                  <span class="lang-badge notranslate" translate="no">{{ lang.badge }}</span>
+                  <span class="lang-name notranslate" translate="no">{{ lang.name }}</span>
+                  @if (lang.code === translationService.currentLang()) {
+                    <i class="fa-solid fa-check check-icon"></i>
+                  }
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    </div>
 
     <!-- Mobile Navigation Toggle -->
     <button class="mobile-toggle" (click)="toggleMenu()" aria-label="Toggle menu">
@@ -35,6 +91,35 @@
   <!-- Mobile Navigation Menu -->
   <div class="nav-mobile" [class.show]="isMenuOpen()">
     <ul class="mobile-nav-list flex-column">
+      <li class="mobile-lang-container notranslate" translate="no">
+        <div class="mobile-lang-wrapper notranslate" translate="no">
+          <div class="mobile-lang-header flex-between notranslate" translate="no" (click)="toggleMobileLangMenu($event)">
+            <div class="flex-center notranslate" translate="no" style="gap: 8px;">
+              <i class="fa-solid fa-globe lang-icon"></i>
+              <span class="mobile-lang-title notranslate" translate="no">Language:</span>
+              <span class="mobile-lang-active notranslate" translate="no">{{ currentLanguageObj().name }}</span>
+            </div>
+            <i class="fa-solid fa-chevron-down lang-chevron" [class.open]="isMobileLangOpen()"></i>
+          </div>
+
+          @if (isMobileLangOpen()) {
+            <ul class="mobile-lang-grid notranslate" translate="no">
+              @for (lang of translationService.languages; track lang.code) {
+                <li 
+                  class="mobile-lang-chip notranslate"
+                  translate="no"
+                  [class.selected]="lang.code === translationService.currentLang()"
+                  (click)="selectLanguage(lang.code, $event)"
+                >
+                  <span class="lang-badge notranslate" translate="no">{{ lang.badge }}</span>
+                  <span class="notranslate" translate="no">{{ lang.name }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </li>
+
       <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMenu()">Home</a></li>
       <li><a routerLink="/about" routerLinkActive="active" (click)="closeMenu()">About Us</a></li>
       <li><a routerLink="/products" routerLinkActive="active" (click)="closeMenu()">Products</a></li>
@@ -43,7 +128,14 @@
       <li><a routerLink="/gallery" routerLinkActive="active" (click)="closeMenu()">Gallery</a></li>
       <li><a routerLink="/blog" routerLinkActive="active" (click)="closeMenu()">Blog</a></li>
       <li><a routerLink="/contact" routerLinkActive="active" (click)="closeMenu()">Contact</a></li>
-      <li><a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeMenu()" class="admin-badge">Admin Dashboard</a></li>
+      @if (!authService.currentUser()) {
+        <li><a routerLink="/login" routerLinkActive="active" (click)="closeMenu()">Login / Sign Up</a></li>
+      } @else {
+        <li><a routerLink="/profile" routerLinkActive="active" (click)="closeMenu()">My Profile & Quotes</a></li>
+        @if (authService.isAdmin()) {
+          <li><a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeMenu()" class="admin-badge"><i class="fa-solid fa-gauge"></i> Admin Dashboard</a></li>
+        }
+      }
     </ul>
   </div>
 </header>

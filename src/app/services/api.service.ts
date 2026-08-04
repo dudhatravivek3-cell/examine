@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:5000/api';
+  private baseUrl = 'http://192.168.1.130:5000/api';
 
   constructor(private http: HttpClient) {}
 
@@ -237,5 +237,61 @@ export class ApiService {
 
   updateStatistics(data: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/statistics`, data, { headers: this.getHeaders() });
+  }
+
+  // ==========================================
+  // COMPANY DETAILS
+  // ==========================================
+  getCompanyDetails(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/company`);
+  }
+
+  updateCompanyDetails(data: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/company`, data, { headers: this.getHeaders() });
+  }
+
+  // ==========================================
+  // IMAGE MASTER
+  // ==========================================
+  getImageMaster(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/images`);
+  }
+
+  createImageMaster(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/images`, data, { headers: this.getHeaders() });
+  }
+
+  updateImageMaster(id: string, data: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/images/${id}`, data, { headers: this.getHeaders() });
+  }
+
+  deleteImageMaster(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/images/${id}`, { headers: this.getHeaders() });
+  }
+
+  // ==========================================
+  // FILE UPLOADS
+  // ==========================================
+  uploadImage(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const token = localStorage.getItem('admin_token');
+    const headers = new HttpHeaders({
+      'Authorization': token ? `Bearer ${token}` : ''
+    });
+
+    return this.http.post(`${this.baseUrl}/upload`, formData, { headers });
+  }
+
+  // ==========================================
+  // USER QUOTES & INQUIRIES TRACKING
+  // ==========================================
+  getMyQuotes(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/quotes/my-quotes`, { headers: this.getHeaders() });
+  }
+
+  getMyInquiries(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/inquiries/my-inquiries`, { headers: this.getHeaders() });
   }
 }

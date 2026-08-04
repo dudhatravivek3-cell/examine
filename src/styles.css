@@ -7,16 +7,16 @@
 /* --- CSS Design System --- */
 :root {
   /* Client Color Palette */
-  --primary-color: #0B3D91;      /* Modern Deep Blue */
-  --primary-light: #1E5BBF;
-  --secondary-color: #18A999;    /* Emerald Teal */
-  --secondary-light: #22C5B2;
-  --accent-color: #F5A623;       /* Warm Amber */
-  --accent-hover: #D98C15;
+  --primary-color: #2563EB;      /* Vibrant Royal Blue */
+  --primary-light: #3B82F6;
+  --secondary-color: #0D9488;    /* Emerald Teal */
+  --secondary-light: #14B8A6;
+  --accent-color: #F59E0B;       /* Amber Glow */
+  --accent-hover: #D97706;
   --bg-color: #F8FAFC;           /* Soft Ice Blue Background */
   --bg-card: #FFFFFF;
-  --text-dark: #1F2937;          /* Slate Dark Charcoal */
-  --text-muted: #6B7280;         /* Neutral Gray */
+  --text-dark: #0F172A;          /* Slate Dark Charcoal */
+  --text-muted: #64748B;         /* Neutral Slate Gray */
   --text-light: #FFFFFF;
 
   /* Neutrals & Borders */
@@ -181,27 +181,27 @@ button, input, select, textarea {
 }
 
 .btn-primary {
-  background-color: var(--primary-color);
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
   color: var(--text-light);
-  box-shadow: 0 2px 4px rgba(11, 61, 145, 0.15);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
 }
 
 .btn-primary:hover {
-  background-color: var(--primary-light);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(11, 61, 145, 0.25);
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
 }
 
 .btn-secondary {
-  background-color: var(--secondary-color);
+  background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%);
   color: var(--text-light);
-  box-shadow: 0 2px 4px rgba(24, 169, 153, 0.15);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
 }
 
 .btn-secondary:hover {
-  background-color: var(--secondary-light);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(24, 169, 153, 0.25);
+  background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(13, 148, 136, 0.35);
 }
 
 .btn-accent {
@@ -335,7 +335,7 @@ button, input, select, textarea {
   border: 1px solid var(--border-color);
   background-color: #FFFFFF;
   color: var(--text-dark);
-  transition: var(--transition-fast);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .form-control:focus {
@@ -380,6 +380,16 @@ select.form-control:focus {
   animation: fadeIn 0.2s ease;
 }
 
+/* Lock background page scrolling when any modal overlay or popup is active */
+html:has(.modal-overlay),
+html:has(.dash-modal-overlay),
+body:has(.modal-overlay),
+body:has(.dash-modal-overlay),
+body.modal-open,
+body.swal2-shown {
+  overflow: hidden !important;
+}
+
 /* Modal overlays background */
 .modal-overlay {
   position: fixed;
@@ -390,12 +400,14 @@ select.form-control:focus {
   background-color: rgba(11, 29, 58, 0.6);
   backdrop-filter: blur(8px);
   z-index: 2000;
+  overscroll-behavior: contain;
 }
 
 .modal-content {
   padding: 40px;
   max-height: 90vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
   animation: modal-zoom 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -591,4 +603,61 @@ table tbody tr:hover {
   color: rgba(255, 255, 255, 0.92);
   line-height: 1.6;
 }
+
+/* --- Google Translate UI Overrides --- */
+#google_translate_element,
+.goog-te-combo,
+.goog-te-gadget {
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+.goog-te-banner-frame,
+#goog-gt-tt,
+.goog-te-spinner-pos,
+.goog-te-balloon-frame,
+.goog-te-menu-frame,
+.skiptranslate:not(.goog-te-gadget) {
+  display: none !important;
+}
+
+body {
+  top: 0px !important;
+  position: static !important;
+}
+
+.goog-text-highlight {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* --- SweetAlert2 Design System Styling --- */
+.swal2-popup {
+  font-family: var(--font-family) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.swal2-title {
+  color: var(--primary-color) !important;
+  font-weight: 800 !important;
+}
+
+.swal2-html-container {
+  color: var(--text-dark) !important;
+  font-size: 0.95rem !important;
+}
+
+.goog-text-highlight {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
 

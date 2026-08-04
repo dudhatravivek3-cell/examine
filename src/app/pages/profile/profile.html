@@ -1,0 +1,140 @@
+<div class="container slide-up" style="margin-top: 50px; margin-bottom: 80px;">
+  
+  <!-- Profile Summary Card -->
+  <div class="card flex-between flex-wrap" style="padding: 30px; margin-bottom: 40px; background: linear-gradient(135deg, #0B3D91 0%, #1E3A8A 100%); color: #ffffff; border-radius: var(--radius-md);">
+    <div class="flex" style="gap: 20px; align-items: center;">
+      <div style="width: 70px; height: 70px; border-radius: 50%; background-color: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+        <i class="fa-solid fa-user-check"></i>
+      </div>
+      <div>
+        <h2 style="font-size: 1.6rem; color: #ffffff; margin-bottom: 4px;">{{ authService.currentUser()?.username }}</h2>
+        <p style="opacity: 0.9; font-size: 0.95rem;"><i class="fa-solid fa-envelope" style="margin-right: 6px;"></i> {{ authService.currentUser()?.email }}</p>
+        @if (authService.currentUser()?.company) {
+          <p style="opacity: 0.85; font-size: 0.85rem; margin-top: 2px;"><i class="fa-solid fa-building" style="margin-right: 6px;"></i> {{ authService.currentUser()?.company }}</p>
+        }
+      </div>
+    </div>
+
+    <div class="flex" style="gap: 12px; align-items: center; margin-top: 16px;">
+      @if (authService.isAdmin()) {
+        <a routerLink="/admin/dashboard" class="btn btn-secondary" style="padding: 8px 20px; font-size: 0.85rem;">
+          <i class="fa-solid fa-shield-halved" style="margin-right: 6px;"></i> Admin Control Center
+        </a>
+      }
+      <button (click)="onLogout()" class="btn btn-outline btn-outline-white" style="padding: 8px 20px; font-size: 0.85rem;">
+        <i class="fa-solid fa-right-from-bracket" style="margin-right: 6px;"></i> Sign Out
+      </button>
+    </div>
+  </div>
+
+  <!-- Tracker Tabs Header -->
+  <div class="flex-between flex-wrap" style="margin-bottom: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 12px;">
+    <div class="flex" style="gap: 16px;">
+      <button (click)="setTab('quotes')" [style.color]="activeTab() === 'quotes' ? 'var(--primary-color)' : 'var(--text-muted)'" [style.border-bottom]="activeTab() === 'quotes' ? '3px solid var(--primary-color)' : 'none'" style="background: none; border: none; font-size: 1.15rem; font-weight: 700; cursor: pointer; padding: 8px 16px; margin-bottom: -14px;">
+        <i class="fa-solid fa-file-invoice-dollar" style="margin-right: 8px;"></i> My Requested Quotes ({{ myQuotes().length }})
+      </button>
+      <button (click)="setTab('inquiries')" [style.color]="activeTab() === 'inquiries' ? 'var(--primary-color)' : 'var(--text-muted)'" [style.border-bottom]="activeTab() === 'inquiries' ? '3px solid var(--primary-color)' : 'none'" style="background: none; border: none; font-size: 1.15rem; font-weight: 700; cursor: pointer; padding: 8px 16px; margin-bottom: -14px;">
+        <i class="fa-solid fa-inbox" style="margin-right: 8px;"></i> My Export Inquiries ({{ myInquiries().length }})
+      </button>
+    </div>
+  </div>
+
+  <!-- Tab 1: My Quotes -->
+  @if (activeTab() === 'quotes') {
+    <div class="card" style="padding: 0; overflow: hidden;">
+      @if (myQuotes().length === 0) {
+        <div class="text-center" style="padding: 60px 20px;">
+          <i class="fa-solid fa-file-circle-xmark" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px;"></i>
+          <h3>No Quotes Requested Yet</h3>
+          <p style="color: var(--text-muted); max-width: 400px; margin: 8px auto 20px;">Explore our export product catalog and request proforma quotes directly from product detail pages.</p>
+          <a routerLink="/products" class="btn btn-primary">Browse Export Products</a>
+        </div>
+      } @else {
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+            <thead>
+              <tr style="background-color: var(--bg-color); border-bottom: 1px solid var(--border-color); color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px;">
+                <th style="padding: 16px 20px;">Product Name</th>
+                <th style="padding: 16px 20px;">Quantity Needed</th>
+                <th style="padding: 16px 20px;">Requirements / Message</th>
+                <th style="padding: 16px 20px;">Date Submitted</th>
+                <th style="padding: 16px 20px;">Current Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (q of myQuotes(); track q._id) {
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 16px 20px; font-weight: 700; color: var(--primary-color);">
+                    {{ q.productName || 'General Product' }}
+                  </td>
+                  <td style="padding: 16px 20px;">
+                    {{ q.quantity || 'N/A' }}
+                  </td>
+                  <td style="padding: 16px 20px; max-width: 280px; color: var(--text-muted);">
+                    {{ q.message }}
+                  </td>
+                  <td style="padding: 16px 20px; font-size: 0.85rem; color: var(--text-muted);">
+                    {{ q.createdAt | date:'mediumDate' }}
+                  </td>
+                  <td style="padding: 16px 20px;">
+                    <span [style.background]="q.status === 'completed' ? '#D1FAE5' : q.status === 'in-progress' ? '#DBEAFE' : '#FEF3C7'" [style.color]="q.status === 'completed' ? '#065F46' : q.status === 'in-progress' ? '#1E40AF' : '#92400E'" style="padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; display: inline-block;">
+                      {{ q.status || 'New' }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Tab 2: My Inquiries -->
+  @if (activeTab() === 'inquiries') {
+    <div class="card" style="padding: 0; overflow: hidden;">
+      @if (myInquiries().length === 0) {
+        <div class="text-center" style="padding: 60px 20px;">
+          <i class="fa-solid fa-envelope-open" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px;"></i>
+          <h3>No Inquiries Submitted Yet</h3>
+          <p style="color: var(--text-muted); max-width: 400px; margin: 8px auto 20px;">Have trade questions? Contact our export representatives anytime.</p>
+          <a routerLink="/contact" class="btn btn-primary">Contact Us</a>
+        </div>
+      } @else {
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+            <thead>
+              <tr style="background-color: var(--bg-color); border-bottom: 1px solid var(--border-color); color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px;">
+                <th style="padding: 16px 20px;">Product Interest</th>
+                <th style="padding: 16px 20px;">Message Details</th>
+                <th style="padding: 16px 20px;">Date Submitted</th>
+                <th style="padding: 16px 20px;">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (inq of myInquiries(); track inq._id) {
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                  <td style="padding: 16px 20px; font-weight: 700; color: var(--primary-color);">
+                    {{ inq.productInterest || 'General Inquiry' }}
+                  </td>
+                  <td style="padding: 16px 20px; max-width: 320px; color: var(--text-muted);">
+                    {{ inq.message }}
+                  </td>
+                  <td style="padding: 16px 20px; font-size: 0.85rem; color: var(--text-muted);">
+                    {{ inq.createdAt | date:'mediumDate' }}
+                  </td>
+                  <td style="padding: 16px 20px;">
+                    <span [style.background]="inq.status === 'completed' || inq.status === 'replied' ? '#D1FAE5' : inq.status === 'in-progress' || inq.status === 'read' ? '#DBEAFE' : '#FEF3C7'" [style.color]="inq.status === 'completed' || inq.status === 'replied' ? '#065F46' : inq.status === 'in-progress' || inq.status === 'read' ? '#1E40AF' : '#92400E'" style="padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; display: inline-block;">
+                      {{ inq.status || 'New' }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+
+</div>

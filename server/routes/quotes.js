@@ -67,6 +67,22 @@ router.post('/', async (req, res) => {
   }
 });
 
+// @desc    Get quotes submitted by logged in user
+// @route   GET /api/quotes/my-quotes
+// @access  Private
+router.get('/my-quotes', protect, async (req, res) => {
+  try {
+    const userEmail = req.user?.email;
+    if (!userEmail) {
+      return res.status(400).json({ status: 'error', message: 'User email not found' });
+    }
+    const quotes = await Quote.find({ email: userEmail.toLowerCase() }).sort({ createdAt: -1 });
+    return res.json({ status: 'success', data: quotes });
+  } catch (error) {
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
 // @desc    Get all quote requests
 // @route   GET /api/quotes
 // @access  Private (Admin only)
@@ -92,10 +108,10 @@ router.get('/', protect, async (req, res) => {
 router.put('/:id', protect, async (req, res) => {
   const { status } = req.body;
 
-  if (!status || !['new', 'pending', 'processed'].includes(status)) {
+  if (!status || !['new', 'pending', 'processed', 'in-progress', 'completed', 'archived'].includes(status)) {
     return res.status(400).json({ 
       status: 'error', 
-      message: 'Please provide a valid status: new, pending, or processed' 
+      message: 'Please provide a valid status' 
     });
   }
 

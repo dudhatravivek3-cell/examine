@@ -2,21 +2,21 @@
   <div class="container footer-grid grid grid-4">
     <!-- Col 1: Brand Info -->
     <div class="footer-col brand-info">
-      <a routerLink="/" class="logo flex">
+      <a routerLink="/" class="logo flex notranslate" translate="no">
         <i class="fa-solid fa-globe logo-globe" style="color: var(--secondary-color);"></i>
-        <div class="logo-text">
-          <span class="brand-name text-light">Examine</span>
-          <span class="brand-sub">EXPORT SERVICES</span>
+        <div class="logo-text notranslate" translate="no">
+          <span class="brand-name text-light notranslate" translate="no">{{ company()?.companyName || 'Examine' }}</span>
+          <span class="brand-sub notranslate" translate="no">{{ company()?.subtitle || 'EXPORT SERVICES' }}</span>
         </div>
       </a>
       <p class="footer-desc">
-        Connecting local quality with international buyers. Delivering agricultural and manufactured products globally with standard certification.
+        {{ company()?.description }}
       </p>
       <div class="social-links flex">
         <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
         <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
         <a href="#" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
-        <a href="https://wa.me/919999999999" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        <a [href]="'https://wa.me/' + (company()?.whatsapp || '919999999999')" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
       </div>
     </div>
 
@@ -37,11 +37,11 @@
     <div class="footer-col">
       <h4 class="footer-title">Major Categories</h4>
       <ul class="footer-links">
-        <li><a routerLink="/products" [queryParams]="{category: 'rice'}">Basmati Rice</a></li>
-        <li><a routerLink="/products" [queryParams]="{category: 'spices'}">Organic Spices</a></li>
-        <li><a routerLink="/products" [queryParams]="{category: 'fruits'}">Fresh Fruits</a></li>
-        <li><a routerLink="/products" [queryParams]="{category: 'vegetables'}">Vegetables</a></li>
-        <li><a routerLink="/products" [queryParams]="{category: 'pulses'}">Premium Pulses</a></li>
+        @for (cat of categories(); track cat._id) {
+          <li>
+            <a routerLink="/products" [queryParams]="{category: cat.slug || cat._id}">{{ cat.name }}</a>
+          </li>
+        }
       </ul>
     </div>
 
@@ -51,19 +51,19 @@
       <ul class="footer-contact-info">
         <li class="flex" style="gap: 12px; align-items: flex-start;">
           <span class="icon" style="color: var(--secondary-color); width: 16px; text-align: center; margin-top: 4px;"><i class="fa-solid fa-location-dot"></i></span>
-          <span>102, Export Business Park, Near Port Road, Gujarat, India.</span>
+          <span>{{ company()?.address }}</span>
         </li>
         <li class="flex" style="gap: 12px; align-items: center;">
           <span class="icon" style="color: var(--secondary-color); width: 16px; text-align: center;"><i class="fa-solid fa-phone"></i></span>
-          <a href="tel:+919999999999">+91 99999 99999</a>
+          <a [href]="'tel:' + company()?.phone">{{ company()?.phone }}</a>
         </li>
         <li class="flex" style="gap: 12px; align-items: center;">
           <span class="icon" style="color: var(--secondary-color); width: 16px; text-align: center;"><i class="fa-solid fa-envelope"></i></span>
-          <a href="mailto:info@examineexport.com">info@examineexport.com</a>
+          <a [href]="'mailto:' + company()?.email">{{ company()?.email }}</a>
         </li>
         <li class="flex" style="gap: 12px; align-items: center;">
           <span class="icon" style="color: var(--secondary-color); width: 16px; text-align: center;"><i class="fa-solid fa-clock"></i></span>
-          <span>Mon - Sat: 9:00 AM - 6:00 PM</span>
+          <span>{{ company()?.workingHours }}</span>
         </li>
       </ul>
     </div>
@@ -72,7 +72,7 @@
   <!-- Bottom Bar -->
   <div class="footer-bottom">
     <div class="container flex-between">
-      <p>&copy; {{currentYear}} Examine Export Services. All rights reserved.</p>
+      <p>&copy; {{currentYear}} <span class="notranslate" translate="no">{{ company()?.companyName || 'Examine Export Services' }}</span>. All rights reserved.</p>
       <div class="bottom-links flex">
         <a href="#">Privacy Policy</a>
         <a href="#">Terms & Conditions</a>

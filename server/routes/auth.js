@@ -5,6 +5,74 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const { sendEmail } = require('../utils/mailer');
 
+// @desc    Register new customer user
+// @route   POST /api/auth/register
+// @access  Public
+router.post('/register', async (req, res) => {
+  const { username, email, password, company, phone, country } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Username, Email, and Password are required'
+    });
+  }
+
+  try {
+    const existingUser = await User.findOne({
+      $or: [
+        { username: username.trim() },
+        { email: email.toLowerCase().trim() }
+      ]
+    });
+
+    if (existingUser) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Username or Email is already registered'
+      });
+    }
+
+    const user = new User({
+      username: username.trim(),
+      email: email.toLowerCase().trim(),
+      password,
+      company: company || '',
+      phone: phone || '',
+      country: country || '',
+      role: 'user' // Default to normal customer role
+    });
+
+    await user.save();
+
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET || 'supersecretjwtkeyforadminpanel123!',
+      { expiresIn: '30d' }
+    );
+
+    return res.status(201).json({
+      status: 'success',
+      data: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        company: user.company,
+        phone: user.phone,
+        country: user.country,
+        role: user.role,
+        token: token
+      }
+    });
+  } catch (error) {
+    console.error('Register error:', error.message);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Failed to create user account'
+    });
+  }
+});
+
 // @desc    Auth user & get token
 // @route   POST /api/auth/login
 // @access  Public
@@ -41,6 +109,10 @@ router.post('/login', async (req, res) => {
           _id: user._id,
           username: user.username,
           email: user.email,
+          company: user.company || '',
+          phone: user.phone || '',
+          country: user.country || '',
+          role: user.role || 'user',
           token: token
         }
       });

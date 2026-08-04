@@ -43,6 +43,15 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/contact/contact').then(m => m.ContactComponent)
   },
   {
+    path: 'login',
+    loadComponent: () => import('./pages/admin/login').then(m => m.AdminLoginComponent)
+  },
+  {
+    path: 'profile',
+    loadComponent: () => import('./pages/profile/profile').then(m => m.UserProfileComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: 'admin/login',
     loadComponent: () => import('./pages/admin/login').then(m => m.AdminLoginComponent)
   },

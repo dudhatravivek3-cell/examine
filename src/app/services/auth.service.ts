@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class AuthService {
-  private authUrl = 'http://localhost:5000/api/auth';
+  private authUrl = 'http://192.168.1.130:5000/api/auth';
   
   // Standalone signal to manage reactive admin user state
   public currentUser = signal<any>(null);
@@ -27,6 +27,18 @@ export class AuthService {
     }
   }
 
+  register(data: any): Observable<any> {
+    return this.http.post<any>(`${this.authUrl}/register`, data).pipe(
+      tap((res) => {
+        if (res.status === 'success' && res.data.token) {
+          localStorage.setItem('admin_token', res.data.token);
+          localStorage.setItem('admin_user', JSON.stringify(res.data));
+          this.currentUser.set(res.data);
+        }
+      })
+    );
+  }
+
   login(username: string, password: string): Observable<any> {
     return this.http.post<any>(`${this.authUrl}/login`, { username, password }).pipe(
       tap((res) => {
@@ -43,11 +55,16 @@ export class AuthService {
     localStorage.removeItem('admin_token');
     localStorage.removeItem('admin_user');
     this.currentUser.set(null);
-    this.router.navigate(['/admin/login']);
+    this.router.navigate(['/login']);
   }
 
   isLoggedIn(): boolean {
     return !!localStorage.getItem('admin_token');
+  }
+
+  isAdmin(): boolean {
+    const u = this.currentUser();
+    return u && u.role === 'admin';
   }
 
   getToken(): string | null {

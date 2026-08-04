@@ -1,32 +1,92 @@
-<div class="login-wrapper flex-center" style="min-height: calc(100vh - 80px); background-color: var(--bg-color);">
-  <div class="login-card card" style="width: 100%; max-width: 400px; padding: 40px;">
-    <div class="login-header text-center" style="margin-bottom: 30px;">
-      <i class="fa-solid fa-lock" style="font-size: 3rem; color: var(--secondary-color); display: block; margin-bottom: 15px;"></i>
-      <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--primary-color); margin-top: 12px; margin-bottom: 6px;">Admin Panel Login</h2>
-      <p style="color: var(--text-muted); font-size: 0.85rem;">Sign in to manage product listings, quote requests, and website details.</p>
+<div class="login-wrapper flex-center" style="min-height: calc(100vh - 80px); background-color: var(--bg-color); padding: 40px 16px;">
+  <div class="login-card card" style="width: 100%; max-width: 440px; padding: 40px;">
+    
+    <!-- Mode Tabs Header -->
+    <div class="flex" style="gap: 10px; margin-bottom: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 12px;">
+      <button (click)="setMode('login')" [style.color]="activeMode() === 'login' ? 'var(--primary-color)' : 'var(--text-muted)'" [style.border-bottom]="activeMode() === 'login' ? '3px solid var(--primary-color)' : 'none'" style="background: none; border: none; font-size: 1.1rem; font-weight: 700; cursor: pointer; padding: 8px 16px; margin-bottom: -14px;">
+        Sign In
+      </button>
+      <button (click)="setMode('register')" [style.color]="activeMode() === 'register' ? 'var(--primary-color)' : 'var(--text-muted)'" [style.border-bottom]="activeMode() === 'register' ? '3px solid var(--primary-color)' : 'none'" style="background: none; border: none; font-size: 1.1rem; font-weight: 700; cursor: pointer; padding: 8px 16px; margin-bottom: -14px;">
+        Create Account
+      </button>
     </div>
 
     <!-- Error block -->
-    <div *ngIf="errorMessage()" class="alert alert-danger" style="margin-bottom: 20px;">
-      {{ errorMessage() }}
-    </div>
+    @if (errorMessage()) {
+      <div class="alert alert-danger" style="margin-bottom: 20px;">
+        {{ errorMessage() }}
+      </div>
+    }
 
-    <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="flex-column" style="gap: 16px;">
-      <div class="form-group">
-        <label class="form-label" for="username">Username / Email</label>
-        <input type="text" id="username" name="username" [(ngModel)]="username" required #usernameInput="ngModel" class="form-control" placeholder="e.g. admin">
-        <div *ngIf="usernameInput.invalid && usernameInput.touched" class="form-error">Username is required.</div>
+    @if (activeMode() === 'login') {
+      <div class="login-header text-center" style="margin-bottom: 24px;">
+        <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--primary-color);">Welcome Back</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">Sign in to request quotes, view export inquiries, and access account features.</p>
       </div>
 
-      <div class="form-group">
-        <label class="form-label" for="password">Password</label>
-        <input type="password" id="password" name="password" [(ngModel)]="password" required #passwordInput="ngModel" class="form-control" placeholder="••••••••">
-        <div *ngIf="passwordInput.invalid && passwordInput.touched" class="form-error">Password is required.</div>
+      <form (ngSubmit)="onSubmitLogin()" #loginForm="ngForm" class="flex-column" style="gap: 16px;">
+        <div class="form-group">
+          <label class="form-label" for="username">Username or Email *</label>
+          <input type="text" id="username" name="username" [(ngModel)]="username" required #usernameInput="ngModel" class="form-control" placeholder="e.g. buyer@example.com">
+          @if (usernameInput.invalid && usernameInput.touched) {
+            <div class="form-error">Username or Email is required.</div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password *</label>
+          <input type="password" id="password" name="password" [(ngModel)]="password" required #passwordInput="ngModel" class="form-control" placeholder="••••••••">
+          @if (passwordInput.invalid && passwordInput.touched) {
+            <div class="form-error">Password is required.</div>
+          }
+        </div>
+
+        <button type="submit" [disabled]="!loginForm.form.valid || submitting()" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+          {{ submitting() ? 'Signing in...' : 'Sign In' }}
+        </button>
+      </form>
+    } @else {
+      <div class="login-header text-center" style="margin-bottom: 24px;">
+        <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--primary-color);">Create Buyer Account</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">Register to request proforma quotes and track export inquiry status.</p>
       </div>
 
-      <button type="submit" [disabled]="!loginForm.form.valid || submitting()" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
-        {{ submitting() ? 'Signing in...' : 'Sign In' }}
-      </button>
-    </form>
+      <form (ngSubmit)="onSubmitRegister()" #regForm="ngForm" class="flex-column" style="gap: 14px;">
+        <div class="form-group">
+          <label class="form-label" for="reg-username">Username *</label>
+          <input type="text" id="reg-username" name="regUsername" [(ngModel)]="regUsername" required class="form-control" placeholder="Choose a username">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Email Address *</label>
+          <input type="email" id="reg-email" name="regEmail" [(ngModel)]="regEmail" required class="form-control" placeholder="name@company.com">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-password">Password (min 6 chars) *</label>
+          <input type="password" id="reg-password" name="regPassword" [(ngModel)]="regPassword" required minlength="6" class="form-control" placeholder="••••••••">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-company">Company Name</label>
+          <input type="text" id="reg-company" name="regCompany" [(ngModel)]="regCompany" class="form-control" placeholder="e.g. Global Foods Ltd">
+        </div>
+
+        <div class="grid grid-2" style="gap: 12px;">
+          <div class="form-group">
+            <label class="form-label" for="reg-phone">Phone / WhatsApp</label>
+            <input type="text" id="reg-phone" name="regPhone" [(ngModel)]="regPhone" class="form-control" placeholder="+1 234 56789">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-country">Country</label>
+            <input type="text" id="reg-country" name="regCountry" [(ngModel)]="regCountry" class="form-control" placeholder="e.g. Germany">
+          </div>
+        </div>
+
+        <button type="submit" [disabled]="!regForm.form.valid || submitting()" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+          {{ submitting() ? 'Creating Account...' : 'Register Account' }}
+        </button>
+      </form>
+    }
   </div>
 </div>

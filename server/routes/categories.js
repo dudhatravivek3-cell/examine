@@ -88,26 +88,32 @@ router.put('/:id', protect, async (req, res) => {
   const { name, description, imageUrl, slug } = req.body;
 
   try {
-    const category = await Category.findById(req.params.id);
-    if (!category) {
+    const updateData = {};
+
+    if (name) {
+      updateData.name = name;
+      updateData.slug = slug || slugify(name);
+    } else if (slug) {
+      updateData.slug = slug;
+    }
+
+    if (description !== undefined) updateData.description = description;
+    if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
+
+    const updatedCategory = await Category.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedCategory) {
       return res.status(404).json({ status: 'error', message: 'Category not found' });
     }
 
-    if (name) category.name = name;
-    if (description !== undefined) category.description = description;
-    if (imageUrl !== undefined) category.imageUrl = imageUrl;
-    
-    if (slug) {
-      category.slug = slug;
-    } else if (name) {
-      category.slug = slugify(name);
-    }
-
-    const updatedCategory = await category.save();
     return res.json({ status: 'success', data: updatedCategory });
   } catch (error) {
     console.error('Update category error:', error.message);
-    return res.status(500).json({ status: 'error', message: 'Server error' });
+    return res.status(500).json({ status: 'error', message: error.message || 'Server error' });
   }
 });
 

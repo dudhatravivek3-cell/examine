@@ -168,37 +168,43 @@ router.put('/:id', protect, async (req, res) => {
   } = req.body;
 
   try {
-    const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).json({ status: 'error', message: 'Product not found' });
-    }
+    const updateData = {};
 
     if (categoryId) {
       const categoryExists = await Category.findById(categoryId);
       if (!categoryExists) {
         return res.status(400).json({ status: 'error', message: 'Invalid Category ID' });
       }
-      product.categoryId = categoryId;
+      updateData.categoryId = categoryId;
     }
 
     if (name) {
-      product.name = name;
-      if (!slug) product.slug = slugify(name);
+      updateData.name = name;
+      if (!slug) updateData.slug = slugify(name);
     }
-    if (slug) product.slug = slug;
-    if (description !== undefined) product.description = description;
-    if (specifications !== undefined) product.specifications = specifications;
-    if (packagingInfo !== undefined) product.packagingInfo = packagingInfo;
-    if (origin !== undefined) product.origin = origin;
-    if (moq !== undefined) product.moq = moq;
-    if (exportAvailability !== undefined) product.exportAvailability = exportAvailability;
-    if (images !== undefined) product.images = images;
+    if (slug) updateData.slug = slug;
+    if (description !== undefined) updateData.description = description;
+    if (specifications !== undefined) updateData.specifications = specifications;
+    if (packagingInfo !== undefined) updateData.packagingInfo = packagingInfo;
+    if (origin !== undefined) updateData.origin = origin;
+    if (moq !== undefined) updateData.moq = moq;
+    if (exportAvailability !== undefined) updateData.exportAvailability = exportAvailability;
+    if (images !== undefined) updateData.images = images;
 
-    const updatedProduct = await product.save();
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).populate('categoryId', 'name slug');
+
+    if (!updatedProduct) {
+      return res.status(404).json({ status: 'error', message: 'Product not found' });
+    }
+
     return res.json({ status: 'success', data: updatedProduct });
   } catch (error) {
     console.error('Update product error:', error.message);
-    return res.status(500).json({ status: 'error', message: 'Server error' });
+    return res.status(500).json({ status: 'error', message: error.message || 'Server error' });
   }
 });
 

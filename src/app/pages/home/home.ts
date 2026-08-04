@@ -14,13 +14,8 @@ import { MapComponent } from '../../components/map/map';
 export class HomeComponent implements OnInit {
   private apiService = inject(ApiService);
 
-  // Fallback initial counts while database loads
-  stats = signal<any>({
-    countriesServed: 30,
-    shipments: 5000,
-    yearsExperience: 10,
-    happyClients: 1000
-  });
+  stats = signal<any>(null);
+  imagesMap = signal<{ [key: string]: string }>({});
 
   categories = signal<any[]>([]);
   testimonials = signal<any[]>([]);
@@ -36,6 +31,17 @@ export class HomeComponent implements OnInit {
     this.loadTestimonials();
     this.loadFaqs();
     this.loadCertifications();
+    this.loadImageMaster();
+  }
+
+  loadImageMaster() {
+    this.apiService.getImageMaster().subscribe({
+      next: (res) => {
+        if (res.status === 'success' && res.map) {
+          this.imagesMap.set(res.map);
+        }
+      }
+    });
   }
 
   loadStats() {

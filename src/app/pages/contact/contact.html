@@ -13,28 +13,30 @@
   <div class="contact-info flex-column">
     <div class="info-card card">
       <h3>Office Headquarters</h3>
-      <p class="address-text"><i class="fa-solid fa-location-dot" style="color: var(--secondary-color); margin-right: 8px;"></i> 102, Export Business Park, Near Port Road, Gujarat, India.</p>
+      <p class="address-text"><i class="fa-solid fa-location-dot" style="color: var(--secondary-color); margin-right: 8px;"></i> {{ company()?.address }}</p>
       
       <div class="divider" style="margin: 20px 0; height: 1px; background: var(--border-color);"></div>
 
       <h3>Direct Channels</h3>
-      <p><i class="fa-solid fa-phone" style="color: var(--secondary-color); margin-right: 8px; width: 16px; text-align: center;"></i> Phone: <a href="tel:+919999999999" class="link-hover">+91 99999 99999</a></p>
-      <p><i class="fa-brands fa-whatsapp" style="color: var(--secondary-color); margin-right: 8px; width: 16px; text-align: center;"></i> WhatsApp: <a href="https://wa.me/919999999999" target="_blank" class="link-hover">+91 99999 99999</a></p>
-      <p><i class="fa-solid fa-envelope" style="color: var(--secondary-color); margin-right: 8px; width: 16px; text-align: center;"></i> Email: <a href="mailto:info@examineexport.com" class="link-hover">info@examineexport.com</a></p>
-      <p><i class="fa-solid fa-clock" style="color: var(--secondary-color); margin-right: 8px; width: 16px; text-align: center;"></i> Working Hours: Mon - Sat, 9:00 AM - 6:00 PM (IST)</p>
+      <p><i class="fa-solid fa-phone" style="color: var(--secondary-color); margin-right: 8px; width: 16px; text-align: center;"></i> Phone: <a [href]="'tel:' + company()?.phone" class="link-hover">{{ company()?.phone }}</a></p>
+      <p><i class="fa-brands fa-whatsapp" style="color: var(--secondary-color); margin-right: 8px; width: 16px; text-align: center;"></i> WhatsApp: <a [href]="'https://wa.me/' + company()?.whatsapp" target="_blank" class="link-hover">{{ company()?.whatsapp }}</a></p>
+      <p><i class="fa-solid fa-envelope" style="color: var(--secondary-color); margin-right: 8px; width: 16px; text-align: center;"></i> Email: <a [href]="'mailto:' + company()?.email" class="link-hover">{{ company()?.email }}</a></p>
+      <p><i class="fa-solid fa-clock" style="color: var(--secondary-color); margin-right: 8px; width: 16px; text-align: center;"></i> Working Hours: {{ company()?.workingHours }}</p>
     </div>
 
     <!-- Google Map Embed -->
     <div class="map-embed-wrapper card" style="padding: 0; overflow: hidden; margin-top: 30px; height: 300px;">
-      <iframe 
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3684.1105953049103!2d72.13625471500735!3d22.5749298851817!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e4e811c7504a7%3A0xc3911c47ea4ab3ff!2sGujarat%2C%20India!5e0!3m2!1sen!2sus!4v1657800000000!5m2!1sen!2sus" 
-        width="100%" 
-        height="100%" 
-        style="border:0;" 
-        allowfullscreen="" 
-        loading="lazy"
-        title="Gujarat, India location map"
-      ></iframe>
+      @if (sanitizedMapUrl()) {
+        <iframe 
+          [src]="sanitizedMapUrl()" 
+          width="100%" 
+          height="100%" 
+          style="border:0;" 
+          allowfullscreen="" 
+          loading="lazy"
+          title="Headquarters location map"
+        ></iframe>
+      }
     </div>
   </div>
 
@@ -44,20 +46,28 @@
     <p style="color: var(--text-muted); margin-bottom: 24px;">Please fill in the form details below. Our trade representatives will reply with a proforma quotation within 12 hours.</p>
 
     <!-- Success / Error banners -->
-    <div *ngIf="successMessage()" class="alert alert-success">{{ successMessage() }}</div>
-    <div *ngIf="errorMessage()" class="alert alert-danger">{{ errorMessage() }}</div>
+    @if (successMessage()) {
+      <div class="alert alert-success">{{ successMessage() }}</div>
+    }
+    @if (errorMessage()) {
+      <div class="alert alert-danger">{{ errorMessage() }}</div>
+    }
 
     <form (ngSubmit)="onSubmit()" #contactForm="ngForm" class="flex-column" style="gap: 16px;">
       <div class="grid grid-2">
         <div class="form-group">
           <label class="form-label" for="name">Your Name *</label>
           <input type="text" id="name" name="name" [(ngModel)]="formData.name" required #nameInput="ngModel" class="form-control" placeholder="e.g. John Doe">
-          <div *ngIf="nameInput.invalid && nameInput.touched" class="form-error">Name is required.</div>
+          @if (nameInput.invalid && nameInput.touched) {
+            <div class="form-error">Name is required.</div>
+          }
         </div>
         <div class="form-group">
           <label class="form-label" for="email">Business Email *</label>
           <input type="email" id="email" name="email" [(ngModel)]="formData.email" required email #emailInput="ngModel" class="form-control" placeholder="e.g. buyer@company.com">
-          <div *ngIf="emailInput.invalid && emailInput.touched" class="form-error">Valid email is required.</div>
+          @if (emailInput.invalid && emailInput.touched) {
+            <div class="form-error">Valid email is required.</div>
+          }
         </div>
       </div>
 
@@ -81,13 +91,9 @@
           <label class="form-label" for="interest">Product Interest</label>
           <select id="interest" name="productInterest" [(ngModel)]="formData.productInterest" class="form-control">
             <option value="">Select a category</option>
-            <option value="Basmati Rice">Basmati Rice</option>
-            <option value="Organic Spices">Organic Spices</option>
-            <option value="Fresh Fruits">Fresh Fruits</option>
-            <option value="Vegetables">Vegetables</option>
-            <option value="Pulses & Flour">Pulses & Flour</option>
-            <option value="Dehydrated Products">Dehydrated Products</option>
-            <option value="Other">Other Products</option>
+            @for (cat of categories(); track cat._id) {
+              <option [value]="cat.name">{{ cat.name }}</option>
+            }
           </select>
         </div>
       </div>
@@ -95,7 +101,9 @@
       <div class="form-group">
         <label class="form-label" for="message">Detailed Requirements *</label>
         <textarea id="message" name="message" [(ngModel)]="formData.message" required #msgInput="ngModel" rows="5" class="form-control" placeholder="Describe required port terms (FOB Mundra/CIF Hamburg), certificate demands, or customized bags/packaging..."></textarea>
-        <div *ngIf="msgInput.invalid && msgInput.touched" class="form-error">Requirements are required.</div>
+        @if (msgInput.invalid && msgInput.touched) {
+          <div class="form-error">Requirements are required.</div>
+        }
       </div>
 
       <button type="submit" [disabled]="!contactForm.form.valid || submitting()" class="btn btn-primary self-start">

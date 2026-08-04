@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +9,8 @@ import { ApiService } from '../../services/api.service';
   standalone: true,
   imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './catalog.html',
-  styleUrl: './catalog.css'
+  styleUrl: './catalog.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductCatalogComponent implements OnInit {
   private apiService = inject(ApiService);
@@ -25,6 +26,8 @@ export class ProductCatalogComponent implements OnInit {
   totalPages = signal<number>(1);
   totalProducts = signal<number>(0);
   limit = 12;
+
+  readonly pagesArray = computed(() => Array.from({ length: this.totalPages() }, (_, i) => i + 1));
 
   ngOnInit() {
     this.loadCategories();

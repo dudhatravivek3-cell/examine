@@ -93,67 +93,83 @@
 </div>
 
 <!-- Modal: Quote Request Form -->
-<div *ngIf="showQuoteModal()" class="modal-overlay flex-center fade-in">
-  <div class="modal-content card slide-up" style="max-width: 600px; width: 90%; position: relative;">
-    <button (click)="closeQuoteModal()" class="modal-close-btn" aria-label="Close modal">&times;</button>
-    
-    <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--primary-color); margin-bottom: 8px;">Request FOB/CIF Wholesale Quote</h3>
-    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px;">Product: <strong style="color: var(--secondary-color);">{{ product()?.name }}</strong></p>
+@if (showQuoteModal()) {
+  <div class="modal-overlay flex-center fade-in">
+    <div class="modal-content card slide-up" style="max-width: 600px; width: 90%; position: relative;">
+      <button (click)="closeQuoteModal()" class="modal-close-btn" aria-label="Close modal">&times;</button>
+      
+      <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--primary-color); margin-bottom: 8px;">Request FOB/CIF Wholesale Quote</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px;">Product: <strong style="color: var(--secondary-color);">{{ product()?.name }}</strong></p>
 
-    <!-- Feedback banners -->
-    <div *ngIf="quoteSuccess()" class="alert alert-success">{{ quoteSuccess() }}</div>
-    <div *ngIf="quoteError()" class="alert alert-danger">{{ quoteError() }}</div>
+      <!-- Feedback banners -->
+      @if (quoteSuccess()) {
+        <div class="alert alert-success">{{ quoteSuccess() }}</div>
+      }
+      @if (quoteError()) {
+        <div class="alert alert-danger">{{ quoteError() }}</div>
+      }
 
-    <form (ngSubmit)="onSubmitQuote()" #quoteForm="ngForm" class="flex-column" style="gap: 16px;">
-      <div class="grid grid-2">
-        <div class="form-group">
-          <label class="form-label" for="quote-name">Your Name *</label>
-          <input type="text" id="quote-name" name="name" [(ngModel)]="quoteData.name" required #nameInput="ngModel" class="form-control">
-          <div *ngIf="nameInput.invalid && nameInput.touched" class="form-error">Name is required.</div>
+      <form (ngSubmit)="onSubmitQuote()" #quoteForm="ngForm" class="flex-column" style="gap: 16px;">
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label class="form-label" for="quote-name">Your Name *</label>
+            <input type="text" id="quote-name" name="name" [(ngModel)]="quoteData.name" required #nameInput="ngModel" class="form-control">
+            @if (nameInput.invalid && nameInput.touched) {
+              <div class="form-error">Name is required.</div>
+            }
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="quote-email">Business Email *</label>
+            <input type="email" id="quote-email" name="email" [(ngModel)]="quoteData.email" required email #emailInput="ngModel" class="form-control">
+            @if (emailInput.invalid && emailInput.touched) {
+              <div class="form-error">Valid email is required.</div>
+            }
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label" for="quote-email">Business Email *</label>
-          <input type="email" id="quote-email" name="email" [(ngModel)]="quoteData.email" required email #emailInput="ngModel" class="form-control">
-          <div *ngIf="emailInput.invalid && emailInput.touched" class="form-error">Valid email is required.</div>
-        </div>
-      </div>
 
-      <div class="grid grid-2">
-        <div class="form-group">
-          <label class="form-label" for="quote-company">Company Name</label>
-          <input type="text" id="quote-company" name="companyName" [(ngModel)]="quoteData.companyName" class="form-control">
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label class="form-label" for="quote-company">Company Name</label>
+            <input type="text" id="quote-company" name="companyName" [(ngModel)]="quoteData.companyName" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="quote-country">Import Country *</label>
+            <input type="text" id="quote-country" name="country" [(ngModel)]="quoteData.country" required #countryInput="ngModel" class="form-control" placeholder="e.g. United States">
+            @if (countryInput.invalid && countryInput.touched) {
+              <div class="form-error">Country is required.</div>
+            }
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label" for="quote-country">Import Country *</label>
-          <input type="text" id="quote-country" name="country" [(ngModel)]="quoteData.country" required #countryInput="ngModel" class="form-control" placeholder="e.g. United States">
-          <div *ngIf="countryInput.invalid && countryInput.touched" class="form-error">Country is required.</div>
-        </div>
-      </div>
 
-      <div class="grid grid-2">
-        <div class="form-group">
-          <label class="form-label" for="quote-phone">Phone / WhatsApp</label>
-          <input type="text" id="quote-phone" name="phone" [(ngModel)]="quoteData.phone" class="form-control">
+        <div class="grid grid-2">
+          <div class="form-group">
+            <label class="form-label" for="quote-phone">Phone / WhatsApp</label>
+            <input type="text" id="quote-phone" name="phone" [(ngModel)]="quoteData.phone" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="quote-quantity">Quantity Required *</label>
+            <input type="text" id="quote-quantity" name="quantity" [(ngModel)]="quoteData.quantity" required #qtyInput="ngModel" class="form-control" placeholder="e.g. 50 Metric Tons">
+            @if (qtyInput.invalid && qtyInput.touched) {
+              <div class="form-error">Quantity is required.</div>
+            }
+          </div>
         </div>
+
         <div class="form-group">
-          <label class="form-label" for="quote-quantity">Quantity Required *</label>
-          <input type="text" id="quote-quantity" name="quantity" [(ngModel)]="quoteData.quantity" required #qtyInput="ngModel" class="form-control" placeholder="e.g. 50 Metric Tons">
-          <div *ngIf="qtyInput.invalid && qtyInput.touched" class="form-error">Quantity is required.</div>
+          <label class="form-label" for="quote-message">Special Packing / Shipping Terms *</label>
+          <textarea id="quote-message" name="message" [(ngModel)]="quoteData.message" required rows="4" #msgInput="ngModel" class="form-control" placeholder="Describe required port terms (FOB Mundra/CIF Hamburg), certificate demands, or customized bags/packaging..."></textarea>
+          @if (msgInput.invalid && msgInput.touched) {
+            <div class="form-error">Detailed specifications are required.</div>
+          }
         </div>
-      </div>
 
-      <div class="form-group">
-        <label class="form-label" for="quote-message">Special Packing / Shipping Terms *</label>
-        <textarea id="quote-message" name="message" [(ngModel)]="quoteData.message" required rows="4" #msgInput="ngModel" class="form-control" placeholder="Describe required port terms (FOB Mundra/CIF Hamburg), certificate demands, or customized bags/packaging..."></textarea>
-        <div *ngIf="msgInput.invalid && msgInput.touched" class="form-error">Detailed specifications are required.</div>
-      </div>
-
-      <div class="flex" style="gap: 12px; justify-content: flex-end; margin-top: 10px;">
-        <button type="button" (click)="closeQuoteModal()" class="btn btn-outline" style="padding: 10px 24px;">Cancel</button>
-        <button type="submit" [disabled]="!quoteForm.form.valid || submittingQuote()" class="btn btn-secondary" style="padding: 10px 28px;">
-          {{ submittingQuote() ? 'Submitting Request...' : 'Send Quote Request' }}
-        </button>
-      </div>
-    </form>
+        <div class="flex" style="gap: 12px; justify-content: flex-end; margin-top: 10px;">
+          <button type="button" (click)="closeQuoteModal()" class="btn btn-outline" style="padding: 10px 24px;">Cancel</button>
+          <button type="submit" [disabled]="!quoteForm.form.valid || submittingQuote()" class="btn btn-secondary" style="padding: 10px 28px;">
+            {{ submittingQuote() ? 'Submitting Request...' : 'Send Quote Request' }}
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
+}

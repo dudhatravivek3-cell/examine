@@ -15,37 +15,39 @@
 </section>
 
 <!-- Statistics Section -->
-<section class="stats-section">
-  <div class="container grid grid-4">
-    <div class="stat-card flex-column flex-center card card-hover">
-      <span class="stat-icon" style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 12px;"><i class="fa-solid fa-earth-americas"></i></span>
-      <h3 class="stat-number">{{ stats().countriesServed }}+</h3>
-      <p class="stat-label">Countries Served</p>
+@if (stats()) {
+  <section class="stats-section">
+    <div class="container grid grid-4">
+      <div class="stat-card flex-column flex-center card card-hover">
+        <span class="stat-icon" style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 12px;"><i class="fa-solid fa-earth-americas"></i></span>
+        <h3 class="stat-number">{{ stats().countriesServed }}+</h3>
+        <p class="stat-label">Countries Served</p>
+      </div>
+      <div class="stat-card flex-column flex-center card card-hover">
+        <span class="stat-icon" style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 12px;"><i class="fa-solid fa-box"></i></span>
+        <h3 class="stat-number">{{ stats().shipments }}+</h3>
+        <p class="stat-label">Shipments Delivered</p>
+      </div>
+      <div class="stat-card flex-column flex-center card card-hover">
+        <span class="stat-icon" style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 12px;"><i class="fa-solid fa-hourglass-half"></i></span>
+        <h3 class="stat-number">{{ stats().yearsExperience }}+</h3>
+        <p class="stat-label">Years of Experience</p>
+      </div>
+      <div class="stat-card flex-column flex-center card card-hover">
+        <span class="stat-icon" style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 12px;"><i class="fa-solid fa-handshake"></i></span>
+        <h3 class="stat-number">{{ stats().happyClients }}+</h3>
+        <p class="stat-label">Happy Clients</p>
+      </div>
     </div>
-    <div class="stat-card flex-column flex-center card card-hover">
-      <span class="stat-icon" style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 12px;"><i class="fa-solid fa-box"></i></span>
-      <h3 class="stat-number">{{ stats().shipments }}+</h3>
-      <p class="stat-label">Shipments Delivered</p>
-    </div>
-    <div class="stat-card flex-column flex-center card card-hover">
-      <span class="stat-icon" style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 12px;"><i class="fa-solid fa-hourglass-half"></i></span>
-      <h3 class="stat-number">{{ stats().yearsExperience }}+</h3>
-      <p class="stat-label">Years of Experience</p>
-    </div>
-    <div class="stat-card flex-column flex-center card card-hover">
-      <span class="stat-icon" style="color: var(--secondary-color); font-size: 2rem; margin-bottom: 12px;"><i class="fa-solid fa-handshake"></i></span>
-      <h3 class="stat-number">{{ stats().happyClients }}+</h3>
-      <p class="stat-label">Happy Clients</p>
-    </div>
-  </div>
-</section>
+  </section>
+}
 
 <!-- About Company Preview -->
 <section class="about-preview-section">
   <div class="container grid grid-2">
     <div class="about-image-wrapper">
       <div class="about-image-overlay"></div>
-      <img src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=800&q=80" alt="Export Logistics" class="about-img">
+      <img [src]="imagesMap()['hero_about_bg'] || 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=800&q=80'" alt="Export Logistics" class="about-img">
     </div>
     <div class="about-preview-content flex-column">
       <span class="section-subtitle">WHO WE ARE</span>
@@ -206,24 +208,14 @@
 </section>
 
 <!-- Certifications Section -->
-<section class="certs-section">
-  <div class="container">
-    <div class="section-title-container">
-      <span class="section-subtitle">TRUST & COMPLIANCE</span>
-      <h2 class="section-title">Our Certifications</h2>
-    </div>
-
-    @if (certifications().length === 0) {
-      <!-- Fallback display if database is empty -->
-      <div class="certs-grid flex flex-center" style="gap: 40px; flex-wrap: wrap;">
-        <span class="cert-logo-mock">APEDA</span>
-        <span class="cert-logo-mock">FSSAI</span>
-        <span class="cert-logo-mock">IEC</span>
-        <span class="cert-logo-mock">ISO 9001</span>
-        <span class="cert-logo-mock">GST</span>
-        <span class="cert-logo-mock">MSME</span>
+@if (certifications().length > 0) {
+  <section class="certs-section">
+    <div class="container">
+      <div class="section-title-container">
+        <span class="section-subtitle">TRUST & COMPLIANCE</span>
+        <h2 class="section-title">Our Certifications</h2>
       </div>
-    } @else {
+
       <div class="certs-grid flex flex-center" style="gap: 40px; flex-wrap: wrap;">
         @for (cert of certifications(); track cert._id) {
           <div class="cert-logo-wrapper card card-hover flex-center">
@@ -231,9 +223,9 @@
           </div>
         }
       </div>
-    }
-  </div>
-</section>
+    </div>
+  </section>
+}
 
 <!-- Testimonials Section -->
 @if (testimonials().length > 0) {

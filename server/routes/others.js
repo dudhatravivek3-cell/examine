@@ -9,6 +9,8 @@ const Faq = require('../models/Faq');
 const Certification = require('../models/Certification');
 const Country = require('../models/Country');
 const Statistic = require('../models/Statistic');
+const CompanyDetail = require('../models/CompanyDetail');
+const ImageMaster = require('../models/ImageMaster');
 
 // ==========================================
 // GALLERY ROUTES
@@ -317,6 +319,159 @@ router.put('/statistics', protect, async (req, res) => {
 
     const saved = await stat.save();
     return res.json({ status: 'success', data: saved });
+  } catch (error) {
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// ==========================================
+// COMPANY DETAILS ROUTES
+// ==========================================
+const DEFAULT_LANGUAGES = [
+  { code: 'en', name: 'English', badge: 'EN' },
+  { code: 'es', name: 'Español', badge: 'ES' },
+  { code: 'fr', name: 'Français', badge: 'FR' },
+  { code: 'de', name: 'Deutsch', badge: 'DE' },
+  { code: 'zh-CN', name: '中文', badge: 'ZH' },
+  { code: 'hi', name: 'हिन्दी', badge: 'HI' },
+  { code: 'ar', name: 'العربية', badge: 'AR' },
+  { code: 'pt', name: 'Português', badge: 'PT' },
+  { code: 'ru', name: 'Русский', badge: 'RU' },
+  { code: 'ja', name: '日本語', badge: 'JP' }
+];
+
+router.get('/company', async (req, res) => {
+  try {
+    let company = await CompanyDetail.findOne();
+    if (!company) {
+      company = new CompanyDetail({
+        supportedLanguages: DEFAULT_LANGUAGES
+      });
+      await company.save();
+    } else if (!company.supportedLanguages || company.supportedLanguages.length === 0) {
+      company.supportedLanguages = DEFAULT_LANGUAGES;
+      await company.save();
+    }
+    return res.json({ status: 'success', data: company });
+  } catch (error) {
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+router.put('/company', protect, async (req, res) => {
+  const {
+    companyName,
+    subtitle,
+    description,
+    address,
+    ownerName,
+    ownerTitle,
+    ownerQuote,
+    phone,
+    whatsapp,
+    email,
+    workingHours,
+    googleMapEmbedUrl,
+    supportedLanguages
+  } = req.body;
+
+  try {
+    let company = await CompanyDetail.findOne();
+    if (!company) {
+      company = new CompanyDetail();
+    }
+
+    if (companyName !== undefined) company.companyName = companyName;
+    if (subtitle !== undefined) company.subtitle = subtitle;
+    if (description !== undefined) company.description = description;
+    if (address !== undefined) company.address = address;
+    if (ownerName !== undefined) company.ownerName = ownerName;
+    if (ownerTitle !== undefined) company.ownerTitle = ownerTitle;
+    if (ownerQuote !== undefined) company.ownerQuote = ownerQuote;
+    if (phone !== undefined) company.phone = phone;
+    if (whatsapp !== undefined) company.whatsapp = whatsapp;
+    if (email !== undefined) company.email = email;
+    if (workingHours !== undefined) company.workingHours = workingHours;
+    if (googleMapEmbedUrl !== undefined) company.googleMapEmbedUrl = googleMapEmbedUrl;
+    if (supportedLanguages !== undefined) company.supportedLanguages = supportedLanguages;
+    company.updatedAt = Date.now();
+
+    const saved = await company.save();
+    return res.json({ status: 'success', data: saved });
+  } catch (error) {
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+// ==========================================
+// IMAGE MASTER ROUTES
+// ==========================================
+router.get('/images', async (req, res) => {
+  try {
+    const list = await ImageMaster.find().sort({ key: 1 });
+    const map = {};
+    list.forEach(img => {
+      map[img.key] = img.imageUrl;
+    });
+    return res.json({ status: 'success', data: list, map });
+  } catch (error) {
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+router.post('/images', protect, async (req, res) => {
+  const { key, imageUrl, description } = req.body;
+  if (!key || !imageUrl) {
+    return res.status(400).json({ status: 'error', message: 'Key and Image URL are required' });
+  }
+  try {
+    let item = await ImageMaster.findOne({ key: key.trim() });
+    if (item) {
+      item.imageUrl = imageUrl.trim();
+      if (description !== undefined) item.description = description;
+      item.updatedAt = Date.now();
+    } else {
+      item = new ImageMaster({
+        key: key.trim(),
+        imageUrl: imageUrl.trim(),
+        description: description || ''
+      });
+    }
+    const saved = await item.save();
+    return res.status(201).json({ status: 'success', data: saved });
+  } catch (error) {
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+router.put('/images/:id', protect, async (req, res) => {
+  const { key, imageUrl, description } = req.body;
+  try {
+    const item = await ImageMaster.findById(req.params.id);
+    if (!item) {
+      return res.status(404).json({ status: 'error', message: 'Image Master entry not found' });
+    }
+
+    if (key !== undefined) item.key = key.trim();
+    if (imageUrl !== undefined) item.imageUrl = imageUrl.trim();
+    if (description !== undefined) item.description = description;
+    item.updatedAt = Date.now();
+
+    const saved = await item.save();
+    return res.json({ status: 'success', data: saved });
+  } catch (error) {
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+router.delete('/images/:id', protect, async (req, res) => {
+  try {
+    const item = await ImageMaster.findById(req.params.id);
+    if (!item) {
+      return res.status(404).json({ status: 'error', message: 'Image Master entry not found' });
+    }
+    await item.deleteOne();
+    return res.json({ status: 'success', message: 'Image Master entry deleted' });
   } catch (error) {
     return res.status(500).json({ status: 'error', message: error.message });
   }

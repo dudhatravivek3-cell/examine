@@ -1,15 +1,17 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css'
+  styleUrl: './dashboard.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminDashboardComponent implements OnInit {
   private apiService = inject(ApiService);
@@ -26,8 +28,105 @@ export class AdminDashboardComponent implements OnInit {
   blogs = signal<any[]>([]);
   galleryItems = signal<any[]>([]);
   certifications = signal<any[]>([]);
+  imageMasterItems = signal<any[]>([]);
+  uploadingImage = signal(false);
 
-  get filteredProducts() {
+  // File Upload Helper
+  uploadFile(event: Event, callback: (url: string) => void) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    this.uploadingImage.set(true);
+
+    this.apiService.uploadImage(file).subscribe({
+      next: (res) => {
+        this.uploadingImage.set(false);
+        if (res.status === 'success' && res.data?.url) {
+          callback(res.data.url);
+          Swal.fire({
+            icon: 'success',
+            title: 'Image Uploaded!',
+            text: 'File saved to server public uploads directory.',
+            timer: 1500,
+            showConfirmButton: false
+          });
+        } else {
+          Swal.fire({ icon: 'error', title: 'Upload Error', text: res.message || 'Failed to upload image' });
+        }
+      },
+      error: (err) => {
+        this.uploadingImage.set(false);
+        const msg = err.error?.message || 'Error uploading file to server';
+        Swal.fire({ icon: 'error', title: 'Upload Failed', text: msg });
+      }
+    });
+  }
+
+  onCategoryFileSelect(event: Event) {
+    this.uploadFile(event, (url) => {
+      this.categoryForm.imageUrl = url;
+    });
+  }
+
+  onProductCoverFileSelect(event: Event) {
+    this.uploadFile(event, (url) => {
+      this.productForm.images[0] = url;
+    });
+  }
+
+  onImageMasterFileSelect(event: Event) {
+    this.uploadFile(event, (url) => {
+      this.imageForm.imageUrl = url;
+    });
+  }
+
+  onCertFileSelect(event: Event) {
+    this.uploadFile(event, (url) => {
+      this.certForm.imageUrl = url;
+    });
+  }
+
+  onGalleryFileSelect(event: Event) {
+    this.uploadFile(event, (url) => {
+      this.galleryForm.imageUrl = url;
+    });
+  }
+
+  onBlogFileSelect(event: Event) {
+    this.uploadFile(event, (url) => {
+      this.blogForm.featuredImage = url;
+    });
+  }
+
+  // Company Settings Form
+  companyForm = {
+    companyName: '',
+    subtitle: '',
+    description: '',
+    address: '',
+    ownerName: '',
+    ownerTitle: '',
+    ownerQuote: '',
+    phone: '',
+    whatsapp: '',
+    email: '',
+    workingHours: '',
+    googleMapEmbedUrl: '',
+    supportedLanguages: [] as { code: string; name: string; badge: string }[]
+  };
+
+  // Image Master Form
+  imageForm = {
+    id: '',
+    key: '',
+    imageUrl: '',
+    description: ''
+  };
+  showImageModal = signal(false);
+  isEditImage = signal(false);
+
+  readonly filteredProducts = computed(() => {
     const q = this.productSearchQuery().toLowerCase().trim();
     if (!q) return this.products();
     return this.products().filter(p => 
@@ -35,22 +134,22 @@ export class AdminDashboardComponent implements OnInit {
       p.categoryId?.name?.toLowerCase().includes(q) || 
       p.origin?.toLowerCase().includes(q)
     );
-  }
+  });
 
-  get newInquiriesCount() {
+  readonly newInquiriesCount = computed(() => {
     return this.inquiries().filter(i => i.status === 'new').length;
-  }
+  });
 
-  get newQuotesCount() {
+  readonly newQuotesCount = computed(() => {
     return this.quotes().filter(q => q.status === 'new').length;
-  }
+  });
 
   // Stats counters form
   statsData = {
-    countriesServed: 30,
-    shipments: 5000,
-    yearsExperience: 10,
-    happyClients: 1000
+    countriesServed: 0,
+    shipments: 0,
+    yearsExperience: 0,
+    happyClients: 0
   };
 
   // Category Form
@@ -120,6 +219,8 @@ export class AdminDashboardComponent implements OnInit {
     this.loadGallery();
     this.loadCertifications();
     this.loadStats();
+    this.loadCompanyDetails();
+    this.loadImageMaster();
   }
 
 
@@ -128,7 +229,26 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   onLogout() {
-    this.authService.logout();
+    Swal.fire({
+      title: 'Logout?',
+      text: 'Are you sure you want to log out of the Admin Dashboard?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#EF4444',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Yes, Logout'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.authService.logout();
+        Swal.fire({
+          icon: 'success',
+          title: 'Logged Out',
+          text: 'You have been logged out successfully.',
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
   }
 
   // --- STATS ---
@@ -151,7 +271,12 @@ export class AdminDashboardComponent implements OnInit {
     this.apiService.updateStatistics(this.statsData).subscribe({
       next: (res) => {
         if (res.status === 'success') {
-          alert('Statistics updated successfully!');
+          Swal.fire({
+            icon: 'success',
+            title: 'Statistics Updated',
+            text: 'Website statistics updated successfully!',
+            confirmButtonColor: '#0B3D91'
+          });
         }
       }
     });
@@ -193,6 +318,7 @@ export class AdminDashboardComponent implements OnInit {
           if (res.status === 'success') {
             this.loadCategories();
             this.showCategoryModal.set(false);
+            Swal.fire({ icon: 'success', title: 'Category Updated', confirmButtonColor: '#0B3D91' });
           }
         }
       });
@@ -202,6 +328,7 @@ export class AdminDashboardComponent implements OnInit {
           if (res.status === 'success') {
             this.loadCategories();
             this.showCategoryModal.set(false);
+            Swal.fire({ icon: 'success', title: 'Category Created', confirmButtonColor: '#0B3D91' });
           }
         }
       });
@@ -209,12 +336,25 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   onDeleteCategory(id: string) {
-    if (confirm('Are you sure you want to delete this category?')) {
-      this.apiService.deleteCategory(id).subscribe({
-        next: () => this.loadCategories(),
-        error: (err) => alert(err.error?.message || 'Failed to delete category.')
-      });
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to delete this category?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#EF4444',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.apiService.deleteCategory(id).subscribe({
+          next: () => {
+            this.loadCategories();
+            Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Category has been deleted.', confirmButtonColor: '#0B3D91' });
+          },
+          error: (err) => Swal.fire({ icon: 'error', title: 'Error', text: err.error?.message || 'Failed to delete category.', confirmButtonColor: '#0B3D91' })
+        });
+      }
+    });
   }
 
   // --- PRODUCTS CRUD ---
@@ -316,11 +456,12 @@ export class AdminDashboardComponent implements OnInit {
           if (res.status === 'success') {
             this.loadProducts();
             this.showProductModal.set(false);
+            Swal.fire({ icon: 'success', title: 'Product Updated', confirmButtonColor: '#0B3D91' });
           }
         },
         error: (err) => {
           console.error('Failed to update product:', err);
-          alert(err.error?.message || 'Failed to update product details.');
+          Swal.fire({ icon: 'error', title: 'Error', text: err.error?.message || 'Failed to update product details.', confirmButtonColor: '#0B3D91' });
         }
       });
     } else {
@@ -329,22 +470,36 @@ export class AdminDashboardComponent implements OnInit {
           if (res.status === 'success') {
             this.loadProducts();
             this.showProductModal.set(false);
+            Swal.fire({ icon: 'success', title: 'Product Created', confirmButtonColor: '#0B3D91' });
           }
         },
         error: (err) => {
           console.error('Failed to create product:', err);
-          alert(err.error?.message || 'Failed to create new product.');
+          Swal.fire({ icon: 'error', title: 'Error', text: err.error?.message || 'Failed to create new product.', confirmButtonColor: '#0B3D91' });
         }
       });
     }
   }
 
   onDeleteProduct(id: string) {
-    if (confirm('Are you sure you want to delete this product?')) {
-      this.apiService.deleteProduct(id).subscribe({
-        next: () => this.loadProducts()
-      });
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to delete this product?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#EF4444',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.apiService.deleteProduct(id).subscribe({
+          next: () => {
+            this.loadProducts();
+            Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Product has been deleted.', confirmButtonColor: '#0B3D91' });
+          }
+        });
+      }
+    });
   }
 
   // --- INQUIRIES ---
@@ -365,11 +520,24 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   onDeleteInquiry(id: string) {
-    if (confirm('Delete this inquiry log?')) {
-      this.apiService.deleteInquiry(id).subscribe({
-        next: () => this.loadInquiries()
-      });
-    }
+    Swal.fire({
+      title: 'Delete Inquiry?',
+      text: 'Are you sure you want to delete this inquiry log?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#EF4444',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Yes, delete'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.apiService.deleteInquiry(id).subscribe({
+          next: () => {
+            this.loadInquiries();
+            Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Inquiry log has been deleted.', confirmButtonColor: '#0B3D91' });
+          }
+        });
+      }
+    });
   }
 
   // --- QUOTES ---
@@ -390,11 +558,24 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   onDeleteQuote(id: string) {
-    if (confirm('Delete this quote request log?')) {
-      this.apiService.deleteQuote(id).subscribe({
-        next: () => this.loadQuotes()
-      });
-    }
+    Swal.fire({
+      title: 'Delete Quote Request?',
+      text: 'Are you sure you want to delete this quote request log?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#EF4444',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Yes, delete'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.apiService.deleteQuote(id).subscribe({
+          next: () => {
+            this.loadQuotes();
+            Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Quote request log has been deleted.', confirmButtonColor: '#0B3D91' });
+          }
+        });
+      }
+    });
   }
 
   // --- BLOGS CRUD ---
@@ -434,6 +615,7 @@ export class AdminDashboardComponent implements OnInit {
           if (res.status === 'success') {
             this.loadBlogs();
             this.showBlogModal.set(false);
+            Swal.fire({ icon: 'success', title: 'Blog Post Updated', confirmButtonColor: '#0B3D91' });
           }
         }
       });
@@ -443,6 +625,7 @@ export class AdminDashboardComponent implements OnInit {
           if (res.status === 'success') {
             this.loadBlogs();
             this.showBlogModal.set(false);
+            Swal.fire({ icon: 'success', title: 'Blog Post Published', confirmButtonColor: '#0B3D91' });
           }
         }
       });
@@ -450,11 +633,24 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   onDeleteBlog(id: string) {
-    if (confirm('Are you sure you want to delete this blog post?')) {
-      this.apiService.deleteBlog(id).subscribe({
-        next: () => this.loadBlogs()
-      });
-    }
+    Swal.fire({
+      title: 'Delete Blog Post?',
+      text: 'Are you sure you want to delete this blog post?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#EF4444',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Yes, delete'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.apiService.deleteBlog(id).subscribe({
+          next: () => {
+            this.loadBlogs();
+            Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Blog post has been deleted.', confirmButtonColor: '#0B3D91' });
+          }
+        });
+      }
+    });
   }
 
   // --- GALLERY CRUD ---
@@ -479,17 +675,31 @@ export class AdminDashboardComponent implements OnInit {
         if (res.status === 'success') {
           this.loadGallery();
           this.showGalleryModal.set(false);
+          Swal.fire({ icon: 'success', title: 'Photo Added to Gallery', confirmButtonColor: '#0B3D91' });
         }
       }
     });
   }
 
   onDeleteGallery(id: string) {
-    if (confirm('Delete this photo from operations gallery?')) {
-      this.apiService.deleteGalleryItem(id).subscribe({
-        next: () => this.loadGallery()
-      });
-    }
+    Swal.fire({
+      title: 'Delete Photo?',
+      text: 'Delete this photo from operations gallery?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#EF4444',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Yes, delete'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.apiService.deleteGalleryItem(id).subscribe({
+          next: () => {
+            this.loadGallery();
+            Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Gallery photo has been deleted.', confirmButtonColor: '#0B3D91' });
+          }
+        });
+      }
+    });
   }
 
   // --- CERTIFICATIONS CRUD ---
@@ -528,6 +738,7 @@ export class AdminDashboardComponent implements OnInit {
           if (res.status === 'success') {
             this.loadCertifications();
             this.showCertModal.set(false);
+            Swal.fire({ icon: 'success', title: 'Certification Updated', confirmButtonColor: '#0B3D91' });
           }
         }
       });
@@ -537,6 +748,7 @@ export class AdminDashboardComponent implements OnInit {
           if (res.status === 'success') {
             this.loadCertifications();
             this.showCertModal.set(false);
+            Swal.fire({ icon: 'success', title: 'Certification Created', confirmButtonColor: '#0B3D91' });
           }
         }
       });
@@ -544,11 +756,156 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   onDeleteCert(id: string) {
-    if (confirm('Delete this certification item?')) {
-      this.apiService.deleteCertification(id).subscribe({
-        next: () => this.loadCertifications()
+    Swal.fire({
+      title: 'Delete Certification?',
+      text: 'Are you sure you want to delete this certification item?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#EF4444',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Yes, delete'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.apiService.deleteCertification(id).subscribe({
+          next: () => {
+            this.loadCertifications();
+            Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Certification item has been deleted.', confirmButtonColor: '#0B3D91' });
+          }
+        });
+      }
+    });
+  }
+
+  // --- COMPANY DETAILS CRUD ---
+  loadCompanyDetails() {
+    this.apiService.getCompanyDetails().subscribe({
+      next: (res) => {
+        if (res.status === 'success' && res.data) {
+          const d = res.data;
+          this.companyForm = {
+            companyName: d.companyName || '',
+            subtitle: d.subtitle || '',
+            description: d.description || '',
+            address: d.address || '',
+            ownerName: d.ownerName || '',
+            ownerTitle: d.ownerTitle || '',
+            ownerQuote: d.ownerQuote || '',
+            phone: d.phone || '',
+            whatsapp: d.whatsapp || '',
+            email: d.email || '',
+            workingHours: d.workingHours || '',
+            googleMapEmbedUrl: d.googleMapEmbedUrl || '',
+            supportedLanguages: d.supportedLanguages || []
+          };
+        }
+      }
+    });
+  }
+
+  onSaveCompanyDetails() {
+    this.apiService.updateCompanyDetails(this.companyForm).subscribe({
+      next: (res) => {
+        if (res.status === 'success') {
+          Swal.fire({
+            icon: 'success',
+            title: 'Company Settings Saved!',
+            text: 'Company details and language settings updated successfully.',
+            confirmButtonColor: '#0B3D91'
+          });
+        }
+      }
+    });
+  }
+
+  addLanguage() {
+    this.companyForm.supportedLanguages.push({ code: '', name: '', badge: '' });
+  }
+
+  removeLanguage(index: number) {
+    this.companyForm.supportedLanguages.splice(index, 1);
+  }
+
+  // --- IMAGE MASTER CRUD ---
+  loadImageMaster() {
+    this.apiService.getImageMaster().subscribe({
+      next: (res) => {
+        if (res.status === 'success' && res.data) {
+          this.imageMasterItems.set(res.data);
+        }
+      }
+    });
+  }
+
+  openAddImage(presetKey?: string) {
+    this.imageForm = {
+      id: '',
+      key: presetKey || '',
+      imageUrl: '',
+      description: ''
+    };
+    this.isEditImage.set(false);
+    this.showImageModal.set(true);
+  }
+
+  openEditImage(item: any) {
+    this.imageForm = {
+      id: item._id,
+      key: item.key,
+      imageUrl: item.imageUrl,
+      description: item.description || ''
+    };
+    this.isEditImage.set(true);
+    this.showImageModal.set(true);
+  }
+
+  onSubmitImage() {
+    if (!this.imageForm.key || !this.imageForm.imageUrl) {
+      Swal.fire({ icon: 'warning', title: 'Missing Information', text: 'Key Name and Image URL are required!', confirmButtonColor: '#0B3D91' });
+      return;
+    }
+
+    if (this.isEditImage()) {
+      this.apiService.updateImageMaster(this.imageForm.id, this.imageForm).subscribe({
+        next: (res) => {
+          if (res.status === 'success') {
+            this.loadImageMaster();
+            this.showImageModal.set(false);
+            Swal.fire({ icon: 'success', title: 'Image Entry Updated', confirmButtonColor: '#0B3D91' });
+          }
+        }
+      });
+    } else {
+      this.apiService.createImageMaster(this.imageForm).subscribe({
+        next: (res) => {
+          if (res.status === 'success') {
+            this.loadImageMaster();
+            this.showImageModal.set(false);
+            Swal.fire({ icon: 'success', title: 'Image Entry Added', confirmButtonColor: '#0B3D91' });
+          }
+        }
       });
     }
+  }
+
+  onDeleteImage(id: string) {
+    Swal.fire({
+      title: 'Delete Image Entry?',
+      text: 'Are you sure you want to delete this Image Master entry?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#EF4444',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Yes, delete'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.apiService.deleteImageMaster(id).subscribe({
+          next: () => {
+            this.loadImageMaster();
+            Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Image Master entry has been deleted.', confirmButtonColor: '#0B3D91' });
+          }
+        });
+      }
+    });
   }
 }
 

@@ -10,34 +10,8 @@
 <!-- Content Block -->
 <section class="certifications-grid-section container slide-up" style="margin-top: 60px; margin-bottom: 80px;">
   @if (certifications().length === 0) {
-    <!-- Fallback default certifications grid if none seeded in DB -->
-    <div class="grid grid-3">
-      <div class="card card-hover flex-column flex-center text-center" style="gap: 16px;">
-        <div class="cert-img-box flex-center" style="width: 150px; height: 100px; background-color: var(--bg-color); border-radius: var(--radius-sm);">
-          <strong style="color: var(--primary-color); font-size: 1.5rem;">APEDA</strong>
-        </div>
-        <h4>APEDA License</h4>
-        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">Agricultural and Processed Food Products Export Development Authority registration for exporting organic Indian harvests.</p>
-        <span class="btn btn-outline" style="font-size: 0.8rem; padding: 8px 20px;">Download PDF</span>
-      </div>
-
-      <div class="card card-hover flex-column flex-center text-center" style="gap: 16px;">
-        <div class="cert-img-box flex-center" style="width: 150px; height: 100px; background-color: var(--bg-color); border-radius: var(--radius-sm);">
-          <strong style="color: var(--primary-color); font-size: 1.5rem;">FSSAI</strong>
-        </div>
-        <h4>FSSAI Certificate</h4>
-        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">Food Safety and Standards Authority of India packaging certification guaranteeing quality and consumption safety standards.</p>
-        <span class="btn btn-outline" style="font-size: 0.8rem; padding: 8px 20px;">Download PDF</span>
-      </div>
-
-      <div class="card card-hover flex-column flex-center text-center" style="gap: 16px;">
-        <div class="cert-img-box flex-center" style="width: 150px; height: 100px; background-color: var(--bg-color); border-radius: var(--radius-sm);">
-          <strong style="color: var(--primary-color); font-size: 1.5rem;">IEC</strong>
-        </div>
-        <h4>Import Export Code</h4>
-        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.5;">Directorate General of Foreign Trade (DGFT) Import Export Code registration essential for customs clearing operations.</p>
-        <span class="btn btn-outline" style="font-size: 0.8rem; padding: 8px 20px;">Download PDF</span>
-      </div>
+    <div class="text-center" style="padding: 40px;">
+      <p style="color: var(--text-muted); font-size: 1.1rem;">No certifications added yet. Please add certifications from the Admin Dashboard.</p>
     </div>
   } @else {
     <div class="grid grid-3">

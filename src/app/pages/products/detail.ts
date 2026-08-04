@@ -1,18 +1,23 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, ActivatedRoute } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-detail',
   standalone: true,
   imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './detail.html',
-  styleUrl: './detail.css'
+  styleUrl: './detail.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductDetailComponent implements OnInit {
   private apiService = inject(ApiService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
   private route = inject(ActivatedRoute);
 
   product = signal<any>(null);
@@ -67,6 +72,32 @@ export class ProductDetailComponent implements OnInit {
   }
 
   openQuoteModal() {
+    if (!this.authService.isLoggedIn()) {
+      Swal.fire({
+        title: 'Authentication Required',
+        text: 'Please Sign In or Create an Account before requesting a quote.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#0B3D91',
+        confirmButtonText: 'Sign In / Sign Up',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.router.navigate(['/login']);
+        }
+      });
+      return;
+    }
+
+    const u = this.authService.currentUser();
+    if (u) {
+      this.quoteData.name = u.username || '';
+      this.quoteData.email = u.email || '';
+      this.quoteData.companyName = u.company || '';
+      this.quoteData.phone = u.phone || '';
+      this.quoteData.country = u.country || '';
+    }
+
     this.showQuoteModal.set(true);
     this.quoteSuccess.set('');
     this.quoteError.set('');
@@ -85,16 +116,37 @@ export class ProductDetailComponent implements OnInit {
       next: (res) => {
         this.submittingQuote.set(false);
         if (res.status === 'success') {
-          this.quoteSuccess.set('Your quote request has been submitted successfully! We will contact you with bulk rates.');
+          const msg = 'Your quote request has been submitted successfully! We will contact you with bulk rates.';
+          this.quoteSuccess.set(msg);
+          Swal.fire({
+            icon: 'success',
+            title: 'Quote Request Sent!',
+            text: msg,
+            confirmButtonColor: '#0B3D91'
+          });
           this.resetQuoteForm();
-          setTimeout(() => this.closeQuoteModal(), 3000);
+          this.closeQuoteModal();
         } else {
-          this.quoteError.set(res.message || 'Failed to submit quote request.');
+          const errMsg = res.message || 'Failed to submit quote request.';
+          this.quoteError.set(errMsg);
+          Swal.fire({
+            icon: 'error',
+            title: 'Request Failed',
+            text: errMsg,
+            confirmButtonColor: '#0B3D91'
+          });
         }
       },
       error: (err) => {
         this.submittingQuote.set(false);
-        this.quoteError.set(err.error?.message || 'Server connection error. Please try again.');
+        const errMsg = err.error?.message || 'Server connection error. Please try again.';
+        this.quoteError.set(errMsg);
+        Swal.fire({
+          icon: 'error',
+          title: 'Connection Error',
+          text: errMsg,
+          confirmButtonColor: '#0B3D91'
+        });
       }
     });
   }
