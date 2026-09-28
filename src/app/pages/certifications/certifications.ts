@@ -7,7 +7,7 @@ import { ApiService } from '../../services/api.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './certifications.html',
-  styleUrl: './certifications.css'
+  styleUrl: './certifications.scss'
 })
 export class CertificationsComponent implements OnInit {
   private apiService = inject(ApiService);

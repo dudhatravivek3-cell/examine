@@ -1,12 +1,22 @@
+@import '../../../_glass-theme.scss';
+
+/* Detail Hero Card */
+.detail-hero-card {
+  @include glass-surface(3, 'light', 'lg');
+  padding: 36px;
+}
+
 /* Thumbnails selector active state */
 .thumb-btn {
+  @include glass-surface(1, 'light', 'sm');
   border: 2px solid transparent;
-  transition: var(--transition-fast);
+  cursor: pointer;
+  @include touch-press-only;
 }
 
 .thumb-btn.active {
   border-color: var(--secondary-color);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--elevation-2-shadow);
 }
 
 .thumb-btn:focus-visible {
@@ -15,6 +25,10 @@
 }
 
 /* Specifications Table styling */
+.specs-table {
+  @include glass-surface(2, 'light', 'md');
+}
+
 .specs-table th {
   padding: 16px 24px;
 }
@@ -22,5 +36,3 @@
 .specs-table td {
   padding: 16px 24px;
 }
-
-

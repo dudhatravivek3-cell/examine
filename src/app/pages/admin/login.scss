@@ -1,0 +1,39 @@
+@import '../../../_glass-theme.scss';
+
+.login-page-container {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, rgba(11, 61, 145, 0.05) 0%, rgba(24, 169, 153, 0.08) 100%);
+}
+
+.login-card {
+  @include glass-surface(3, 'light', 'lg', $scrim: true);
+  width: 100%;
+  max-width: 480px;
+  padding: 40px;
+  @include touch-3d('sm');
+}
+
+.login-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 12px;
+}
+
+.login-tab-btn {
+  @include glass-surface(1, 'light', 'sm');
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  @include touch-press-only;
+}
+
+.login-tab-btn.active {
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+}

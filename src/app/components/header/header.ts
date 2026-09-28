@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject, ChangeDetectionStrategy, NgZone, OnInit, DestroyRef } from '@angular/core';
+import { Component, signal, computed, inject, ChangeDetectionStrategy, NgZone, OnInit, DestroyRef, HostListener, ElementRef } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslationService, Language } from '../../services/translation.service';
@@ -10,7 +10,7 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [RouterLink, RouterLinkActive, CommonModule],
   templateUrl: './header.html',
-  styleUrl: './header.css',
+  styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderComponent implements OnInit {
@@ -25,6 +25,7 @@ export class HeaderComponent implements OnInit {
   private apiService = inject(ApiService);
   private ngZone = inject(NgZone);
   private destroyRef = inject(DestroyRef);
+  private el = inject(ElementRef);
 
   readonly currentLanguageObj = computed<Language>(() => {
     const code = this.translationService.currentLang();
@@ -67,6 +68,40 @@ export class HeaderComponent implements OnInit {
           document.removeEventListener('click', handleClick);
         });
       });
+    }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (!this.isMenuOpen()) return;
+
+    if (event.key === 'Escape') {
+      this.closeMenu();
+      const toggleBtn = this.el.nativeElement.querySelector('.mobile-toggle') as HTMLElement;
+      toggleBtn?.focus();
+      return;
+    }
+
+    if (event.key === 'Tab') {
+      const navMobile = this.el.nativeElement.querySelector('.nav-mobile');
+      if (!navMobile) return;
+      
+      const focusables = Array.from(
+        navMobile.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), [tabindex="0"]')
+      ) as HTMLElement[];
+
+      if (focusables.length === 0) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        last.focus();
+        event.preventDefault();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        first.focus();
+        event.preventDefault();
+      }
     }
   }
 

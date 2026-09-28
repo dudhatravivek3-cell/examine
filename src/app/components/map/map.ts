@@ -7,7 +7,7 @@ import { ApiService } from '../../services/api.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './map.html',
-  styleUrl: './map.css',
+  styleUrl: './map.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MapComponent implements OnInit, AfterViewInit, OnDestroy {

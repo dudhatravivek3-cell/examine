@@ -4,6 +4,9 @@
 /* Import Leaflet CSS */
 @import "leaflet/dist/leaflet.css";
 
+/* Import Glassmorphism & 3D Touch Design System Tokens */
+@import "./_glass-theme.scss";
+
 /* --- CSS Design System --- */
 :root {
   /* Client Color Palette */
@@ -14,7 +17,7 @@
   --accent-color: #F59E0B;       /* Amber Glow */
   --accent-hover: #D97706;
   --bg-color: #F8FAFC;           /* Soft Ice Blue Background */
-  --bg-card: #FFFFFF;
+  --bg-card: rgba(255, 255, 255, 0.8);
   --text-dark: #0F172A;          /* Slate Dark Charcoal */
   --text-muted: #64748B;         /* Neutral Slate Gray */
   --text-light: #FFFFFF;
@@ -27,18 +30,18 @@
   /* Typography */
   --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-glow: 0 0 20px rgba(24, 169, 153, 0.15);
+  /* Shadows (Legacy fallback mapped to Elevation Scale) */
+  --shadow-sm: var(--elevation-1-shadow);
+  --shadow-md: var(--elevation-2-shadow);
+  --shadow-lg: var(--elevation-3-shadow);
+  --shadow-premium: var(--elevation-4-shadow);
+  --shadow-glow: 0 0 24px rgba(24, 169, 153, 0.25);
 
   /* Radius */
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --radius-full: 9999px;
+  --radius-sm: var(--glass-radius-sm);
+  --radius-md: var(--glass-radius-md);
+  --radius-lg: var(--glass-radius-lg);
+  --radius-full: var(--glass-radius-full);
 
   /* Transitions */
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -159,7 +162,7 @@ button, input, select, textarea {
   flex-direction: column;
 }
 
-/* Premium Buttons */
+/* Premium Buttons with 3D Touch Interaction */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -169,7 +172,7 @@ button, input, select, textarea {
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: var(--transition-normal);
+  @include touch-press-only;
   font-size: 0.9rem;
 }
 
@@ -183,69 +186,67 @@ button, input, select, textarea {
 .btn-primary {
   background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
   color: #FFFFFF !important;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25), var(--elevation-1-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .btn-primary:hover {
   background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%) !important;
   color: #FFFFFF !important;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35), var(--elevation-2-shadow);
 }
 
 .btn-secondary {
   background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%) !important;
   color: #FFFFFF !important;
-  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25), var(--elevation-1-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .btn-secondary:hover {
   background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%) !important;
   color: #FFFFFF !important;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(13, 148, 136, 0.35);
+  box-shadow: 0 6px 18px rgba(13, 148, 136, 0.35), var(--elevation-2-shadow);
 }
 
 .btn-accent {
   background: var(--accent-color) !important;
   color: #FFFFFF !important;
-  box-shadow: 0 2px 4px rgba(245, 166, 35, 0.15);
+  box-shadow: 0 2px 4px rgba(245, 166, 35, 0.15), var(--elevation-1-shadow);
 }
 
 .btn-accent:hover {
   background: var(--accent-hover) !important;
   color: #FFFFFF !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(245, 166, 35, 0.25);
+  box-shadow: 0 4px 10px rgba(245, 166, 35, 0.25), var(--elevation-2-shadow);
 }
 
 .btn-success {
   background: var(--success-color) !important;
   color: #FFFFFF !important;
-  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.15);
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.15), var(--elevation-1-shadow);
 }
 
 .btn-success:hover {
   background: #059669 !important;
   color: #FFFFFF !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25), var(--elevation-2-shadow);
 }
 
 .btn-danger {
   background: var(--danger-color) !important;
   color: #FFFFFF !important;
-  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.15);
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.15), var(--elevation-1-shadow);
 }
 
 .btn-danger:hover {
   background: #DC2626 !important;
   color: #FFFFFF !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25);
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25), var(--elevation-2-shadow);
 }
 
 .btn-outline {
+  @include glass-surface(1, 'light', 'sm');
   background: rgba(255, 255, 255, 0.95) !important;
   color: var(--primary-color) !important;
   border: 1.5px solid var(--primary-color) !important;
@@ -270,6 +271,7 @@ button, input, select, textarea {
 }
 
 .btn-outline-danger {
+  @include glass-surface(1, 'light', 'sm');
   background: rgba(255, 255, 255, 0.95) !important;
   color: var(--danger-color) !important;
   border: 1.5px solid var(--danger-color) !important;
@@ -281,28 +283,24 @@ button, input, select, textarea {
   border-color: var(--danger-color) !important;
 }
 
-/* Card layout */
+/* Global Glass Card Layout */
 .card {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
+  @include glass-surface(2, 'light', 'md');
   padding: 24px;
   transition: var(--transition-normal);
 }
 
-.card-hover:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-lg);
-  border-color: rgba(24, 169, 153, 0.2);
+.card-hover {
+  @include touch-3d('md');
+
+  &:hover {
+    border-color: rgba(24, 169, 153, 0.3);
+  }
 }
 
-/* Glassmorphism utility */
+/* Glassmorphism Utility Class */
 .glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  @include glass-surface(2, 'light', 'md');
 }
 
 /* Micro-animations */
@@ -350,16 +348,19 @@ button, input, select, textarea {
 .form-control {
   width: 100%;
   padding: 12px 16px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
-  background-color: #FFFFFF;
+  border-radius: var(--glass-radius-sm);
+  border: 1px solid var(--glass-border-subtle);
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(var(--glass-blur-sm));
+  -webkit-backdrop-filter: blur(var(--glass-blur-sm));
   color: var(--text-dark);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
 .form-control:focus {
   border-color: var(--secondary-color);
-  box-shadow: 0 0 0 3px rgba(24, 169, 153, 0.1);
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(24, 169, 153, 0.15), var(--elevation-1-shadow);
 }
 
 /* Custom Select Dropdown Styling */
@@ -409,20 +410,22 @@ body.swal2-shown {
   overflow: hidden !important;
 }
 
-/* Modal overlays background */
+/* Modal Overlays & Glass Dialogs */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(11, 29, 58, 0.6);
-  backdrop-filter: blur(8px);
+  background-color: rgba(11, 29, 58, 0.65);
+  backdrop-filter: blur(var(--glass-blur-md));
+  -webkit-backdrop-filter: blur(var(--glass-blur-md));
   z-index: 2000;
   overscroll-behavior: contain;
 }
 
 .modal-content {
+  @include glass-surface(4, 'light', 'lg', $scrim: true);
   padding: 40px;
   max-height: 90vh;
   overflow-y: auto;
@@ -451,7 +454,7 @@ body.swal2-shown {
   color: var(--text-muted);
   cursor: pointer;
   line-height: 1;
-  transition: var(--transition-fast);
+  @include touch-press-only;
 }
 
 .modal-close-btn:hover {
@@ -469,6 +472,8 @@ body.swal2-shown {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  border-radius: var(--glass-radius-md);
+  box-shadow: var(--elevation-1-shadow);
 }
 
 table {
@@ -478,23 +483,25 @@ table {
 }
 
 table th {
-  background-color: var(--primary-color);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.95), rgba(29, 78, 216, 0.95));
+  backdrop-filter: blur(var(--glass-blur-sm));
   color: var(--text-light);
   font-weight: 700;
   text-align: left;
-  padding: 12px 16px;
+  padding: 14px 18px;
   font-size: 0.9rem;
 }
 
 table td {
-  padding: 12px 16px;
+  padding: 14px 18px;
   vertical-align: middle;
   border-bottom: 1px solid var(--border-color);
   font-size: 0.9rem;
+  background-color: rgba(255, 255, 255, 0.6);
 }
 
-table tbody tr:hover {
-  background-color: rgba(11, 61, 145, 0.02);
+table tbody tr:hover td {
+  background-color: rgba(37, 99, 235, 0.04);
 }
 
 /* Specification Row Responsiveness */
@@ -561,17 +568,18 @@ table tbody tr:hover {
 .leaflet-container {
   font-family: var(--font-family) !important;
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--elevation-2-shadow);
 }
 
 .leaflet-popup-content-wrapper {
   border-radius: var(--radius-sm) !important;
-  box-shadow: var(--shadow-lg) !important;
-  border: 1px solid var(--border-color);
+  box-shadow: var(--elevation-3-shadow) !important;
+  border: 1px solid var(--glass-border-light);
+  @include glass-surface(3, 'light', 'sm');
 }
 
 .leaflet-popup-tip {
-  box-shadow: var(--shadow-lg) !important;
+  box-shadow: var(--elevation-3-shadow) !important;
 }
 
 /* App layout main wrapper offset */
@@ -623,45 +631,10 @@ table tbody tr:hover {
   line-height: 1.6;
 }
 
-/* --- Google Translate UI Overrides --- */
-#google_translate_element,
-.goog-te-combo,
-.goog-te-gadget {
-  position: absolute !important;
-  top: -9999px !important;
-  left: -9999px !important;
-  width: 1px !important;
-  height: 1px !important;
-  overflow: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  visibility: hidden !important;
-}
-
-.goog-te-banner-frame,
-#goog-gt-tt,
-.goog-te-spinner-pos,
-.goog-te-balloon-frame,
-.goog-te-menu-frame,
-.skiptranslate:not(.goog-te-gadget) {
-  display: none !important;
-}
-
-body {
-  top: 0px !important;
-  position: static !important;
-}
-
-.goog-text-highlight {
-  background-color: transparent !important;
-  box-shadow: none !important;
-}
-
 /* --- SweetAlert2 Design System Styling --- */
 .swal2-popup {
   font-family: var(--font-family) !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: var(--shadow-lg) !important;
+  @include glass-surface(4, 'light', 'lg', $scrim: true);
 }
 
 .swal2-title {
@@ -674,9 +647,44 @@ body {
   font-size: 0.95rem !important;
 }
 
+/* --- Google Translate UI Overrides & Complete Element Hiding --- */
+#google_translate_element,
+.goog-te-combo,
+.goog-te-gadget,
+.goog-te-gadget-simple,
+.goog-te-gadget-icon,
+.goog-te-menu-value {
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
+#goog-gt-tt,
+.goog-te-spinner-pos,
+.goog-te-balloon-frame,
+.goog-te-menu-frame,
+.goog-te-gadget-simple,
+.VIpgJd-yDvfNd-O22pDetail-ibn,
+.VIpgJd-ZGain-SCstL,
+iframe.goog-te-banner-frame,
+.skiptranslate:not(body) {
+  display: none !important;
+}
+
+body {
+  top: 0px !important;
+  position: static !important;
+}
+
 .goog-text-highlight {
   background-color: transparent !important;
   box-shadow: none !important;
 }
-
-

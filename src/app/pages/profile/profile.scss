@@ -1,0 +1,29 @@
+@import '../../../_glass-theme.scss';
+
+/* User Profile Styling */
+.card {
+  @include glass-surface(2, 'light', 'md');
+  @include touch-3d('sm');
+}
+
+.profile-tab-btn {
+  @include glass-surface(1, 'light', 'sm');
+  @include touch-press-only;
+}
+
+.profile-tab-btn.active {
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+}
+
+.btn-outline-white {
+  @include glass-surface(1, 'light', 'sm');
+  border: 1px solid rgba(255,255,255,0.4);
+  color: #ffffff;
+  @include touch-press-only;
+}
+
+.btn-outline-white:hover {
+  background: rgba(255,255,255,0.25);
+  border-color: #ffffff;
+}

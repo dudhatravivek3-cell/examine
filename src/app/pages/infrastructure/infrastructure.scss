@@ -1,0 +1,25 @@
+@import '../../../_glass-theme.scss';
+
+.infrastructure-header {
+  background-image: url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1920&q=80');
+}
+
+.infra-card, .machine-card, .quality-panel {
+  @include glass-surface(2, 'light', 'md');
+  @include touch-3d('sm');
+  padding: 32px;
+}
+
+@media (max-width: 900px) {
+  .infra-image {
+    order: 2 !important;
+  }
+  .infra-content {
+    order: 1 !important;
+    text-align: center;
+  }
+  .infra-content .section-title {
+    text-align: center;
+    margin: 0 auto 12px auto;
+  }
+}

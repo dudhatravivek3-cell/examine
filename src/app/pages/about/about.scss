@@ -1,0 +1,27 @@
+@import '../../../_glass-theme.scss';
+
+/* About page header banner */
+.about-header {
+  background-image: url('https://images.unsplash.com/photo-1542744094-3a31f103e35f?auto=format&fit=crop&w=1920&q=80');
+}
+
+.about-card, .value-card, .director-card {
+  @include glass-surface(2, 'light', 'md');
+  @include touch-3d('sm');
+  padding: 32px;
+}
+
+.intro-text {
+  justify-content: center;
+}
+
+@media (max-width: 900px) {
+  .director-content {
+    margin-top: 40px;
+    text-align: center;
+  }
+  .director-content .section-title {
+    text-align: center;
+    margin: 0 auto 12px auto;
+  }
+}

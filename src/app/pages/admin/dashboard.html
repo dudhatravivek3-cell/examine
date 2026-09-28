@@ -29,7 +29,15 @@
 
   <!-- Metric KPI Cards Bar -->
   <div class="dash-metrics-grid">
-    <div class="metric-card" (click)="setTab('products')" [class.active-metric]="activeTab() === 'products'">
+    <div 
+      class="metric-card" 
+      tabindex="0" 
+      role="button"
+      (click)="setTab('products')" 
+      (keydown.enter)="setTab('products')"
+      (keydown.space)="setTab('products'); $event.preventDefault()"
+      [class.active-metric]="activeTab() === 'products'"
+    >
       <div class="metric-icon-box bg-blue">
         <i class="fa-solid fa-boxes-stacked"></i>
       </div>
@@ -39,7 +47,15 @@
       </div>
     </div>
 
-    <div class="metric-card" (click)="setTab('categories')" [class.active-metric]="activeTab() === 'categories'">
+    <div 
+      class="metric-card" 
+      tabindex="0" 
+      role="button"
+      (click)="setTab('categories')" 
+      (keydown.enter)="setTab('categories')"
+      (keydown.space)="setTab('categories'); $event.preventDefault()"
+      [class.active-metric]="activeTab() === 'categories'"
+    >
       <div class="metric-icon-box bg-teal">
         <i class="fa-solid fa-layer-group"></i>
       </div>
@@ -49,7 +65,15 @@
       </div>
     </div>
 
-    <div class="metric-card" (click)="setTab('inquiries')" [class.active-metric]="activeTab() === 'inquiries'">
+    <div 
+      class="metric-card" 
+      tabindex="0" 
+      role="button"
+      (click)="setTab('inquiries')" 
+      (keydown.enter)="setTab('inquiries')"
+      (keydown.space)="setTab('inquiries'); $event.preventDefault()"
+      [class.active-metric]="activeTab() === 'inquiries'"
+    >
       <div class="metric-icon-box bg-amber">
         <i class="fa-solid fa-envelope-open-text"></i>
       </div>
@@ -64,7 +88,15 @@
       </div>
     </div>
 
-    <div class="metric-card" (click)="setTab('quotes')" [class.active-metric]="activeTab() === 'quotes'">
+    <div 
+      class="metric-card" 
+      tabindex="0" 
+      role="button"
+      (click)="setTab('quotes')" 
+      (keydown.enter)="setTab('quotes')"
+      (keydown.space)="setTab('quotes'); $event.preventDefault()"
+      [class.active-metric]="activeTab() === 'quotes'"
+    >
       <div class="metric-icon-box bg-purple">
         <i class="fa-solid fa-file-contract"></i>
       </div>
@@ -705,6 +737,26 @@
               <div class="dash-form-group">
                 <label class="dash-form-label" for="comp-hours">Working Hours</label>
                 <input type="text" id="comp-hours" name="workingHours" [(ngModel)]="companyForm.workingHours" class="dash-form-input">
+              </div>
+
+              <div class="dash-form-group">
+                <label class="dash-form-label" for="comp-facebook"><i class="fa-brands fa-facebook" style="color: #1877F2; margin-right: 4px;"></i> Facebook Page URL</label>
+                <input type="text" id="comp-facebook" name="facebook" [(ngModel)]="companyForm.facebook" class="dash-form-input" placeholder="https://facebook.com/yourpage">
+              </div>
+
+              <div class="dash-form-group">
+                <label class="dash-form-label" for="comp-instagram"><i class="fa-brands fa-instagram" style="color: #E4405F; margin-right: 4px;"></i> Instagram Profile URL</label>
+                <input type="text" id="comp-instagram" name="instagram" [(ngModel)]="companyForm.instagram" class="dash-form-input" placeholder="https://instagram.com/yourprofile">
+              </div>
+
+              <div class="dash-form-group">
+                <label class="dash-form-label" for="comp-linkedin"><i class="fa-brands fa-linkedin" style="color: #0A66C2; margin-right: 4px;"></i> LinkedIn Company URL</label>
+                <input type="text" id="comp-linkedin" name="linkedin" [(ngModel)]="companyForm.linkedin" class="dash-form-input" placeholder="https://linkedin.com/company/yourcompany">
+              </div>
+
+              <div class="dash-form-group">
+                <label class="dash-form-label" for="comp-twitter"><i class="fa-brands fa-x-twitter" style="color: #000000; margin-right: 4px;"></i> X (Twitter) Profile URL</label>
+                <input type="text" id="comp-twitter" name="twitter" [(ngModel)]="companyForm.twitter" class="dash-form-input" placeholder="https://x.com/yourhandle">
               </div>
             </div>
 

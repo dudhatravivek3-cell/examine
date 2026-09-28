@@ -1,3 +1,5 @@
+@import '../../../_glass-theme.scss';
+
 /* Products page header banner */
 .products-header {
   background-image: url('https://images.unsplash.com/photo-1595246140625-573b715d11dc?auto=format&fit=crop&w=1920&q=80');
@@ -12,6 +14,9 @@
 .catalog-sidebar {
   width: 280px;
   flex-shrink: 0;
+  @include glass-surface(2, 'light', 'md');
+  padding: 24px;
+  height: fit-content;
 }
 
 .catalog-content {
@@ -30,6 +35,7 @@
 .search-btn {
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   padding: 0 16px;
+  @include touch-press-only;
 }
 
 .sidebar-title {
@@ -60,7 +66,7 @@
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: var(--transition-fast);
+  @include touch-press-only;
 }
 
 .category-filter-btn:hover, .category-filter-btn.active {
@@ -69,17 +75,23 @@
   padding-left: 20px;
 }
 
+.product-card {
+  @include glass-surface(2, 'light', 'md');
+  @include touch-3d('md');
+  height: 100%;
+}
+
 /* Product cards metadata overlays */
 .product-category-tag {
   position: absolute;
   top: 12px;
   right: 12px;
+  @include glass-surface(1, 'light', 'full');
   background-color: var(--primary-color);
   color: #FFFFFF;
   font-size: 0.7rem;
   font-weight: 700;
   padding: 4px 10px;
-  border-radius: var(--radius-full);
   z-index: 2;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -89,6 +101,7 @@
   width: 100%;
   font-size: 0.85rem;
   padding: 10px 0;
+  @include touch-press-only;
 }
 
 /* Pagination buttons styling */
@@ -100,13 +113,14 @@
   height: 40px;
   padding: 0 6px;
   border-radius: var(--radius-sm);
-  border: 1.5px solid var(--border-color) !important;
-  background: #FFFFFF !important;
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: var(--transition-fast);
+  background: #FFFFFF !important;
   color: var(--primary-color) !important;
+  border: 1.5px solid var(--border-color) !important;
+  transition: all var(--transition-fast);
+  @include touch-press-only;
 }
 
 .page-btn:hover, .page-btn.active {
@@ -118,6 +132,7 @@
 .page-btn[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none !important;
 }
 
 @media (max-width: 900px) {

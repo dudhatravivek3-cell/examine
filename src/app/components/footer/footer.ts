@@ -8,7 +8,7 @@ import { ApiService } from '../../services/api.service';
   standalone: true,
   imports: [RouterLink, CommonModule],
   templateUrl: './footer.html',
-  styleUrl: './footer.css',
+  styleUrl: './footer.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FooterComponent implements OnInit {

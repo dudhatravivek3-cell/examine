@@ -7,7 +7,7 @@ import { ApiService } from '../../services/api.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './infrastructure.html',
-  styleUrl: './infrastructure.css',
+  styleUrl: './infrastructure.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InfrastructureComponent implements OnInit {

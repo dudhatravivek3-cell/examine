@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 
@@ -7,7 +7,7 @@ import { ApiService } from '../../services/api.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './gallery.html',
-  styleUrl: './gallery.css'
+  styleUrl: './gallery.scss'
 })
 export class GalleryComponent implements OnInit {
   private apiService = inject(ApiService);
@@ -21,6 +21,13 @@ export class GalleryComponent implements OnInit {
 
   ngOnInit() {
     this.loadGallery();
+  }
+
+  @HostListener('document:keydown.escape')
+  handleEscape() {
+    if (this.showLightbox()) {
+      this.closeLightbox();
+    }
   }
 
   loadGallery() {

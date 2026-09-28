@@ -1,3 +1,5 @@
+@import '../../../_glass-theme.scss';
+
 /* Modern Enterprise ERP Admin Dashboard Styling */
 
 .dash-page-container {
@@ -38,6 +40,7 @@
   justify-content: center;
   font-size: 1.35rem;
   box-shadow: 0 6px 14px rgba(11, 61, 145, 0.2);
+  @include touch-press-only;
 }
 
 .dash-title {
@@ -114,6 +117,7 @@
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
+  @include touch-press-only;
   margin-left: 6px;
   transition: all var(--transition-fast);
 }
@@ -270,6 +274,7 @@
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
+  @include touch-press-only;
   text-align: left;
   transition: all 0.15s ease;
 }
@@ -379,6 +384,7 @@
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(11, 61, 145, 0.2);
+  @include touch-press-only;
   transition: all 0.2s ease;
 }
 
@@ -434,12 +440,6 @@
   border-color: var(--secondary-color);
   background: #FFFFFF;
   box-shadow: 0 0 0 3px rgba(24, 169, 153, 0.15);
-}
-
-.table-summary-tag {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--text-muted);
 }
 
 /* Enterprise Data Grid */
@@ -1153,3 +1153,4 @@
     gap: 8px;
   }
 }
+

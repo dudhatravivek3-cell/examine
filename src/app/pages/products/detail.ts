@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
   standalone: true,
   imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './detail.html',
-  styleUrl: './detail.css',
+  styleUrl: './detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductDetailComponent implements OnInit {

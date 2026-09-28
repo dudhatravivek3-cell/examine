@@ -1,0 +1,6 @@
+@import '../../../_glass-theme.scss';
+
+.blog-detail-container {
+  @include glass-surface(3, 'light', 'lg', $scrim: true);
+  padding: 40px;
+}

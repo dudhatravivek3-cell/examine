@@ -268,7 +268,7 @@
       <div class="faq-accordion flex-column">
         @for (faq of faqs(); track faq._id; let idx = $index) {
           <div class="faq-item card" [class.active]="idx === activeFaqIndex()">
-            <button (click)="toggleFaq(idx)" class="faq-question flex-between">
+            <button (click)="toggleFaq(idx)" class="faq-question flex-between" [attr.aria-expanded]="activeFaqIndex() === idx">
               <span>{{ faq.question }}</span>
               <span class="faq-icon">{{ idx === activeFaqIndex() ? '−' : '+' }}</span>
             </button>

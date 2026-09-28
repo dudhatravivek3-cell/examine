@@ -9,7 +9,7 @@ import { MapComponent } from '../../components/map/map';
   standalone: true,
   imports: [CommonModule, RouterLink, MapComponent],
   templateUrl: './home.html',
-  styleUrl: './home.css'
+  styleUrl: './home.scss'
 })
 export class HomeComponent implements OnInit {
   private apiService = inject(ApiService);

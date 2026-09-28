@@ -1,0 +1,89 @@
+@import '../../../_glass-theme.scss';
+
+/* Page Header Styles */
+.contact-header {
+  background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=80');
+}
+
+.info-card {
+  @include glass-surface(2, 'light', 'md');
+  @include touch-3d('sm');
+  padding: 24px;
+}
+
+/* Info Cards styling */
+.info-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--primary-color);
+}
+
+.info-card p {
+  margin-bottom: 12px;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.address-text {
+  line-height: 1.6;
+}
+
+.link-hover {
+  transition: var(--transition-fast);
+}
+
+.link-hover:hover {
+  color: var(--secondary-color);
+}
+
+/* Form alerts */
+.alert {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 24px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.alert-success {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--success-color);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.alert-danger {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--danger-color);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Forms layout */
+.contact-form-wrapper {
+  @include glass-surface(2, 'light', 'lg');
+  padding: 36px;
+}
+
+.contact-form-wrapper h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+}
+
+.contact-form-wrapper button {
+  @include touch-press-only;
+}
+
+.contact-form-wrapper button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+@media (max-width: 900px) {
+  .contact-section-container {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+}

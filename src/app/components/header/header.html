@@ -13,25 +13,25 @@
     <div class="header-right flex">
       <nav class="nav-desktop">
         <ul class="nav-list flex">
-          <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a></li>
-          <li><a routerLink="/about" routerLinkActive="active">About Us</a></li>
-          <li><a routerLink="/products" routerLinkActive="active">Products</a></li>
-          <li><a routerLink="/infrastructure" routerLinkActive="active">Infrastructure</a></li>
-          <li><a routerLink="/certifications" routerLinkActive="active">Certifications</a></li>
-          <li><a routerLink="/gallery" routerLinkActive="active">Gallery</a></li>
-          <li><a routerLink="/blog" routerLinkActive="active">Blog</a></li>
-          <li><a routerLink="/contact" routerLinkActive="active">Contact</a></li>
+          <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" ariaCurrentWhenActive="page">Home</a></li>
+          <li><a routerLink="/about" routerLinkActive="active" ariaCurrentWhenActive="page">About Us</a></li>
+          <li><a routerLink="/products" routerLinkActive="active" ariaCurrentWhenActive="page">Products</a></li>
+          <li><a routerLink="/infrastructure" routerLinkActive="active" ariaCurrentWhenActive="page">Infrastructure</a></li>
+          <li><a routerLink="/certifications" routerLinkActive="active" ariaCurrentWhenActive="page">Certifications</a></li>
+          <li><a routerLink="/gallery" routerLinkActive="active" ariaCurrentWhenActive="page">Gallery</a></li>
+          <li><a routerLink="/blog" routerLinkActive="active" ariaCurrentWhenActive="page">Blog</a></li>
+          <li><a routerLink="/contact" routerLinkActive="active" ariaCurrentWhenActive="page">Contact</a></li>
           @if (!authService.currentUser()) {
-            <li><a routerLink="/login" routerLinkActive="active" class="nav-btn nav-btn-primary">Login</a></li>
+            <li><a routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page" class="nav-btn nav-btn-primary">Login</a></li>
           } @else {
             <li>
-              <a routerLink="/profile" routerLinkActive="active" class="nav-btn nav-btn-outline">
+              <a routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page" class="nav-btn nav-btn-outline">
                 <i class="fa-solid fa-user"></i> My Profile
               </a>
             </li>
             @if (authService.isAdmin()) {
               <li>
-                <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-btn nav-btn-admin">
+                <a routerLink="/admin/dashboard" routerLinkActive="active" ariaCurrentWhenActive="page" class="nav-btn nav-btn-admin">
                   <i class="fa-solid fa-shield-halved"></i> Dashboard
                 </a>
               </li>
@@ -81,7 +81,13 @@
     </div>
 
     <!-- Mobile Navigation Toggle -->
-    <button class="mobile-toggle" (click)="toggleMenu()" aria-label="Toggle menu">
+    <button 
+      class="mobile-toggle" 
+      (click)="toggleMenu()" 
+      aria-label="Toggle menu"
+      [attr.aria-expanded]="isMenuOpen()"
+      aria-controls="mobile-nav-drawer"
+    >
       <span class="bar" [class.open]="isMenuOpen()"></span>
       <span class="bar" [class.open]="isMenuOpen()"></span>
       <span class="bar" [class.open]="isMenuOpen()"></span>
@@ -89,7 +95,7 @@
   </div>
 
   <!-- Mobile Navigation Menu -->
-  <div class="nav-mobile" [class.show]="isMenuOpen()">
+  <div class="nav-mobile" id="mobile-nav-drawer" [class.show]="isMenuOpen()">
     <ul class="mobile-nav-list flex-column">
       <li class="mobile-lang-container notranslate" translate="no">
         <div class="mobile-lang-wrapper notranslate" translate="no">
@@ -120,20 +126,20 @@
         </div>
       </li>
 
-      <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMenu()">Home</a></li>
-      <li><a routerLink="/about" routerLinkActive="active" (click)="closeMenu()">About Us</a></li>
-      <li><a routerLink="/products" routerLinkActive="active" (click)="closeMenu()">Products</a></li>
-      <li><a routerLink="/infrastructure" routerLinkActive="active" (click)="closeMenu()">Infrastructure</a></li>
-      <li><a routerLink="/certifications" routerLinkActive="active" (click)="closeMenu()">Certifications</a></li>
-      <li><a routerLink="/gallery" routerLinkActive="active" (click)="closeMenu()">Gallery</a></li>
-      <li><a routerLink="/blog" routerLinkActive="active" (click)="closeMenu()">Blog</a></li>
-      <li><a routerLink="/contact" routerLinkActive="active" (click)="closeMenu()">Contact</a></li>
+      <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" ariaCurrentWhenActive="page" (click)="closeMenu()">Home</a></li>
+      <li><a routerLink="/about" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeMenu()">About Us</a></li>
+      <li><a routerLink="/products" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeMenu()">Products</a></li>
+      <li><a routerLink="/infrastructure" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeMenu()">Infrastructure</a></li>
+      <li><a routerLink="/certifications" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeMenu()">Certifications</a></li>
+      <li><a routerLink="/gallery" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeMenu()">Gallery</a></li>
+      <li><a routerLink="/blog" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeMenu()">Blog</a></li>
+      <li><a routerLink="/contact" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeMenu()">Contact</a></li>
       @if (!authService.currentUser()) {
-        <li><a routerLink="/login" routerLinkActive="active" (click)="closeMenu()">Login / Sign Up</a></li>
+        <li><a routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeMenu()">Login / Sign Up</a></li>
       } @else {
-        <li><a routerLink="/profile" routerLinkActive="active" (click)="closeMenu()">My Profile & Quotes</a></li>
+        <li><a routerLink="/profile" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeMenu()">My Profile & Quotes</a></li>
         @if (authService.isAdmin()) {
-          <li><a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeMenu()" class="admin-badge"><i class="fa-solid fa-gauge"></i> Admin Dashboard</a></li>
+          <li><a routerLink="/admin/dashboard" routerLinkActive="active" ariaCurrentWhenActive="page" (click)="closeMenu()" class="admin-badge"><i class="fa-solid fa-gauge"></i> Admin Dashboard</a></li>
         }
       }
     </ul>

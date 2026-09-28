@@ -9,7 +9,7 @@ import { ApiService } from '../../services/api.service';
   standalone: true,
   imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './catalog.html',
-  styleUrl: './catalog.css',
+  styleUrl: './catalog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductCatalogComponent implements OnInit {

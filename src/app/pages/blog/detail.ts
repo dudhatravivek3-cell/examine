@@ -8,7 +8,7 @@ import { ApiService } from '../../services/api.service';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './detail.html',
-  styleUrl: './detail.css'
+  styleUrl: './detail.scss'
 })
 export class BlogDetailComponent implements OnInit {
   private apiService = inject(ApiService);

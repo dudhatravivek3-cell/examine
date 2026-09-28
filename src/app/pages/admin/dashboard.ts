@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css',
+  styleUrl: './dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminDashboardComponent implements OnInit {
@@ -111,6 +111,10 @@ export class AdminDashboardComponent implements OnInit {
     phone: '',
     whatsapp: '',
     email: '',
+    facebook: '',
+    instagram: '',
+    linkedin: '',
+    twitter: '',
     workingHours: '',
     googleMapEmbedUrl: '',
     supportedLanguages: [] as { code: string; name: string; badge: string }[]
@@ -793,6 +797,10 @@ export class AdminDashboardComponent implements OnInit {
             phone: d.phone || '',
             whatsapp: d.whatsapp || '',
             email: d.email || '',
+            facebook: d.facebook || '',
+            instagram: d.instagram || '',
+            linkedin: d.linkedin || '',
+            twitter: d.twitter || '',
             workingHours: d.workingHours || '',
             googleMapEmbedUrl: d.googleMapEmbedUrl || '',
             supportedLanguages: d.supportedLanguages || []

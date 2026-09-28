@@ -1,0 +1,11 @@
+@import '../../../_glass-theme.scss';
+
+.blog-header {
+  background-image: url('https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1920&q=80');
+}
+
+.blog-card {
+  @include glass-surface(2, 'light', 'md');
+  @include touch-3d('md');
+  height: 100%;
+}
